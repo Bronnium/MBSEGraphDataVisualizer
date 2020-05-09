@@ -78,6 +78,12 @@ public class MbseGraphVisualizer extends JFrame {
 		btnLayoutOrthogonal.setToolTipText("Orthogonal Layout");
 		btnLayoutOrthogonal.addActionListener(this::othogonalLayoutListener);
 		toolBar.add(btnLayoutOrthogonal);
+		
+		toolBar.addSeparator();
+		JButton btnSaveDiagram = new JButton("Save diagram");
+		btnSaveDiagram.setToolTipText("Save diagram");
+		btnSaveDiagram.addActionListener(this::saveDiagramListener);
+		toolBar.add(btnSaveDiagram);
 
 		// Additional layout to be added...
 		return toolBar;
@@ -97,6 +103,14 @@ public class MbseGraphVisualizer extends JFrame {
 		final mxOrthogonalLayout layout = new mxOrthogonalLayout(graph); 
 		layout.execute(parent);
     }
+	
+	private synchronized void saveDiagramListener( ActionEvent event ) {
+		//graph.get
+		this.setVisible(false);
+
+		
+		notifyAll();
+    }
 
 	public void setGraphData(mxGraph graphData) {
 		// TODO Auto-generated method stub
@@ -105,5 +119,11 @@ public class MbseGraphVisualizer extends JFrame {
 	    mxGraphComponent graphComponent = new mxGraphComponent(graphData);
 	    getContentPane().add(graphComponent);
 		
+	    this.setVisible(true);
+	}
+
+	public mxGraph getGraphModel() {
+		// TODO Auto-generated method stub
+		return graph;
 	}
 }
