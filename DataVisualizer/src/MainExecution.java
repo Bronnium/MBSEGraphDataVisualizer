@@ -105,6 +105,8 @@ public class MainExecution {
 			graph.getModel().endUpdate();
 		}
 
+		graph.setAllowDanglingEdges(false);
+		
 		return graph;
 	}
 
