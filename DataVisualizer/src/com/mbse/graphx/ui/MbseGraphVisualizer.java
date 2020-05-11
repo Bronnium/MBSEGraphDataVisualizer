@@ -88,7 +88,7 @@ public class MbseGraphVisualizer extends JFrame {
 		toolBar.addSeparator(new Dimension(100, 10));
 
 		// mxCircleLayout
-		JButton btnLayoutCircle = new JButton(new ImageIcon("icons/circle.png"));
+		JButton btnLayoutCircle = new JButton(new ImageIcon("icons/circular.png"));
 		btnLayoutCircle.setToolTipText("Circular Layout");
 		btnLayoutCircle.addActionListener(this::circularLayoutListener);
 		toolBar.add(btnLayoutCircle);
@@ -169,82 +169,42 @@ public class MbseGraphVisualizer extends JFrame {
 
 	private void btnZoomListener( ActionEvent event ) {
 
+		this.graphComponent.setCenterZoom(true);
+		
 		JButton selectedZoom = (JButton) event.getSource();
 		if (selectedZoom.equals(btnZoomIn)) {
 			zoom_scale+=0.1;
+
+			graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
 		}
 		else if (selectedZoom.equals(btnZoomOut)) {
 			zoom_scale-=0.1;
+
+			graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
+		}
+		else if (selectedZoom.equals(btnZoomFit)) {
+			graphComponent.setZoomPolicy(mxGraphComponent.ZOOM_POLICY_PAGE);
+			graphComponent.zoomActual();
+			zoom_scale = 1;
 		}
 		else {
 			new JOptionPane("Zoom not handled");
 			return;
 		}
-
-		//graph.getView().setScale(zoom_scale);
-		
-this.graphComponent.setCenterZoom(true);
-graphComponent.setZoomPolicy(mxGraphComponent.ZOOM_POLICY_PAGE);
-graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
-		//String zoom = "75";
-		//double scale = Math.min(16, Math.max(0.01,Double.parseDouble(zoom ) / 100));
-		
-		//(mxGraphComponent) graphComponent.zoomTo(scale, graphComponent.isCenterZoom());
-		
-		/*
-		//mxGraphComponent graphComponent = ((mxGraphComponent) contentPane).getGraphComponent();
-
-		// Zoomcombo is changed when the scale is changed in the diagram
-		// but the change is ignored here
-			String zoom = zoomCombo.getSelectedItem().toString();
-
-			if (zoom.equals(mxResources.get("page")))
-			{
-				graphComponent.setPageVisible(true);
-				graphComponent
-				.setZoomPolicy(mxGraphComponent.ZOOM_POLICY_PAGE);
-			}
-			else if (zoom.equals(mxResources.get("width")))
-			{
-				graphComponent.setPageVisible(true);
-				graphComponent
-				.setZoomPolicy(mxGraphComponent.ZOOM_POLICY_WIDTH);
-			}
-			else if (zoom.equals(mxResources.get("actualSize")))
-			{
-				graphComponent.zoomActual();
-			}
-			else
-			{
-				try
-				{
-					zoom = zoom.replace("%", "");
-					double scale = Math.min(16, Math.max(0.01,
-							Double.parseDouble(zoom) / 100));
-					graphComponent.zoomTo(scale, graphComponent
-							.isCenterZoom());
-				}
-				catch (Exception ex)
-				{
-					JOptionPane.showMessageDialog(editor, ex
-							.getMessage());
-				}
-			}
-			*/
 	}
-	
+
 	private void circularLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
 		final mxCircleLayout layout = new mxCircleLayout(graph); 
+		layout.setResetEdges(true);
 		layout.execute(parent);
-		graph.repaint();
 	}
 	//compactTreeLayoutListener
 	private void compactTreeLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph); 
+		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph);
+		layout.setHorizontal(true);
 		layout.execute(parent);
-		graph.repaint();
 	}
 
 	private void edgeLabelLayoutListener( ActionEvent event ) {
@@ -280,7 +240,7 @@ graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
 	}
 	private void stackLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		final mxStackLayout layout = new mxStackLayout(graph); 
+		final mxStackLayout layout = new mxStackLayout(graph, false, 10, 10, 10, 10); 
 		layout.execute(parent);
 		graph.repaint();
 	}

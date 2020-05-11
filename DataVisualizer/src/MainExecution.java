@@ -4,11 +4,14 @@ import javax.swing.JOptionPane;
 
 import com.mbse.graphx.ui.MbseGraphVisualizer;
 import com.mxgraph.layout.mxCompactTreeLayout;
+import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.view.mxGraph;
 
 public class MainExecution {
+
+	private static MbseGraphVisualizer graphicalInterface;
 
 	/*
 	 * Utilisation souhaitée dans le plugin Rhapsody
@@ -16,7 +19,7 @@ public class MainExecution {
 	 */
 	public static void main(String[] args) {
 		// déclaration du Visualiseur
-		MbseGraphVisualizer graphicalInterface = new MbseGraphVisualizer();
+		graphicalInterface = new MbseGraphVisualizer();
 
 		// création du graph depuis le modèle avec SnecmaML
 		graphicalInterface.setGraphData(createDummyData());
@@ -34,36 +37,44 @@ public class MainExecution {
 
 		System.out.println("test");
 
-		mxGraph graph = graphicalInterface.getGraphModel();
-		//graph.getModel()
-		
-		mxGraphModel graphModel = (mxGraphModel) graph.getModel();
-		//System.out.println(graphModel.getCell("v221"));
-		
-
-			for (Entry<String, Object> pair : graphModel.getCells().entrySet()) {
-			    System.out.println(pair.getKey() +" / "+ pair.getValue());
-			        mxCell cell = (mxCell) pair.getValue();
-			        if (cell.isVertex()) {
-			        	System.out.println(cell.getGeometry().getX()+","+cell.getGeometry().getY());
-					}
-			        
-			}
+		getObjectPositions();
 
 
 		//((mxCell) graphModel.getCell("test")).getGeometry().getX());;
 	}
 
 
+	/**
+	 * To be defined.
+	 * @return Probably Map<GUID, (X.int,Y.int)>
+	 */
+	public static void getObjectPositions() {
+		mxGraph graph = graphicalInterface.getGraphModel();
+
+		mxGraphModel graphModel = (mxGraphModel) graph.getModel();		
+
+		for (Entry<String, Object> pair : graphModel.getCells().entrySet()) {
+			System.out.println(pair.getKey() +" / "+ pair.getValue());
+			mxCell cell = (mxCell) pair.getValue();
+			if (cell.isVertex()) {
+				System.out.println(cell.getGeometry().getX()+","+cell.getGeometry().getY());
+			}
+
+		}
+		return;
+	}
 	private static mxGraph createDummyData() {
 		mxGraph graph = new mxGraph();
 		Object parent = graph.getDefaultParent();
 
-		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, false);         
+		graph.setCellsDisconnectable(false);
+		graph.setAllowDanglingEdges(false);
+		//final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, false); 
+		final mxStackLayout layout = new mxStackLayout(graph, true, 10, 10, 10, 10); 
 		//layout.setUseBoundingBox(false);
 		//layout.setEdgeRouting(false);
-		//layout.setLevelDistance(30);
-		//layout.setNodeDistance(10);
+		//layout.setLevelDistance(10); // gestion de l'espacement vertical
+		//layout.setNodeDistance(20); // gestion de l'espacement horizontal
 
 
 		graph.getModel().beginUpdate();
@@ -105,8 +116,9 @@ public class MainExecution {
 			graph.getModel().endUpdate();
 		}
 
-		graph.setAllowDanglingEdges(false);
 		
+
+
 		return graph;
 	}
 
@@ -135,7 +147,7 @@ public class MainExecution {
 				graph.insertEdge(parent, null, "E" + i, a, b);
 				start = a;
 			}
-			
+
 			layout.execute(parent);
 		} finally {
 			graph.getModel().endUpdate();
