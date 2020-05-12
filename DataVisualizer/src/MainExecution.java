@@ -69,6 +69,7 @@ public class MainExecution {
 
 		graph.setCellsDisconnectable(false);
 		graph.setAllowDanglingEdges(false);
+		graph.setCellsEditable(false);
 		//final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, false); 
 		final mxStackLayout layout = new mxStackLayout(graph, true, 10, 10, 10, 10); 
 		//layout.setUseBoundingBox(false);
