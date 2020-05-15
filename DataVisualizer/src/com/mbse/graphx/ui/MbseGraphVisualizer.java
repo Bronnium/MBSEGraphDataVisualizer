@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,7 +25,12 @@ import com.mxgraph.layout.mxPartitionLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.layout.orthogonal.mxOrthogonalLayout;
+import com.mxgraph.model.mxGeometry;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.swing.util.mxMorphing;
+import com.mxgraph.util.mxEvent;
+import com.mxgraph.util.mxEventObject;
+import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxGraphView;
 import com.mxgraph.view.mxLayoutManager;
@@ -195,9 +202,35 @@ public class MbseGraphVisualizer extends JFrame {
 
 	private void circularLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		final mxCircleLayout layout = new mxCircleLayout(graph); 
-		layout.setResetEdges(true);
-		layout.execute(parent);
+		
+		graph.getModel().beginUpdate();
+		try
+		{
+			// Creates a layout algorithm to be used
+			// with the graph
+			final mxCircleLayout circleLayout = new mxCircleLayout(graph); 
+			circleLayout.execute(parent);
+			circleLayout.setResetEdges(true);
+		}
+		finally
+		{
+			mxMorphing morph = new mxMorphing(graphComponent, 20,1.2, 20);
+						
+			morph.addListener(mxEvent.DONE, new mxIEventListener()
+			{
+
+				public void invoke(Object sender, mxEventObject evt)
+				{
+					graph.getModel().endUpdate();
+				}
+
+			});
+
+			morph.startAnimation();
+
+		}
+		
+		
 	}
 	//compactTreeLayoutListener
 	private void compactTreeLayoutListener( ActionEvent event ) {
@@ -260,14 +293,32 @@ public class MbseGraphVisualizer extends JFrame {
 		notifyAll();
 	}
 
-	public void setGraphData(mxGraph graphData) {
+	public mxGraphComponent setGraphData(mxGraph graphData) {
 		// TODO Auto-generated method stub
 		this.graph = graphData; 
 
 		graphComponent = new mxGraphComponent(graphData);
 		getContentPane().add(graphComponent);
+		
+		graphComponent.getGraphControl().addMouseListener(new MouseAdapter()
+		{
+		
+			public void mouseReleased(MouseEvent e)
+			{
+				Object cell = graphComponent.getCellAt(e.getX(), e.getY());
+				
+				if (cell != null)
+				{
+					mxGeometry cellGeometry = graph.getCellGeometry(cell);
+					System.out.println("cell="+graph.getLabel(cell));
+					System.out.println("X:"+cellGeometry.getX()+"Y:"+cellGeometry.getY());
+				}
+			}
+		});
+
 
 		this.setVisible(true);
+		return graphComponent;
 	}
 
 	public mxGraph getGraphModel() {

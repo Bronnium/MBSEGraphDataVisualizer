@@ -1,12 +1,17 @@
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
+import com.mbse.graphx.layout.CallStackLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizer;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
 public class MainExecution {
@@ -18,6 +23,15 @@ public class MainExecution {
 	 * 
 	 */
 	public static void main(String[] args) {
+		try
+		{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1)
+		{
+			e1.printStackTrace();
+		}
+		
 		// déclaration du Visualiseur
 		graphicalInterface = new MbseGraphVisualizer();
 
@@ -37,6 +51,7 @@ public class MainExecution {
 
 		System.out.println("test");
 
+		// récupération des position des objects
 		getObjectPositions();
 
 
@@ -70,8 +85,8 @@ public class MainExecution {
 		graph.setCellsDisconnectable(false);
 		graph.setAllowDanglingEdges(false);
 		graph.setCellsEditable(false);
-		//final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, false); 
-		final mxStackLayout layout = new mxStackLayout(graph, true, 10, 10, 10, 10); 
+		final CallStackLayout layout = new CallStackLayout(graph); 
+		//final mxStackLayout layout = new mxStackLayout(graph, true, 20, 10, 10, 10); 
 		//layout.setUseBoundingBox(false);
 		//layout.setEdgeRouting(false);
 		//layout.setLevelDistance(10); // gestion de l'espacement vertical
@@ -80,15 +95,15 @@ public class MainExecution {
 
 		graph.getModel().beginUpdate();
 		try {
-			Object root = graph.insertVertex(parent, "treeRoot", "Root", 0, 0, 60, 40);
+			Object root = graph.insertVertex(parent, "treeRoot", "System", 0, 0, 60, 40);
 
-			Object v1 = graph.insertVertex(parent, "v1", "Child 1", 0, 0, 60, 40);
+			Object v1 = graph.insertVertex(parent, "v1", "System A", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", root, v1);
 
-			Object v2 = graph.insertVertex(parent, "v2", "Child 2", 0, 0, 60, 40);
+			Object v2 = graph.insertVertex(parent, "v2", "System B", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", root, v2);
 
-			Object v3 = graph.insertVertex(parent, "v3", "Child 3", 0, 0, 60, 40);
+			Object v3 = graph.insertVertex(parent, "v3", "System C", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", root, v3);
 
 			Object v11 = graph.insertVertex(parent, "v11", "Child 1.1", 0, 0, 60, 40);
@@ -97,9 +112,18 @@ public class MainExecution {
 			Object v12 = graph.insertVertex(parent, "v12", "Child 1.2", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", v1, v12);
 
+			Object v13 = graph.insertVertex(parent, "v13", "Child 1.3", 0, 0, 60, 40);
+			graph.insertEdge(parent, null, "", v1, v13);
+			
+			Object v14 = graph.insertVertex(parent, "v14", "Child 1.4", 0, 0, 60, 40);
+			graph.insertEdge(parent, null, "", v1, v14);
+
+			Object v15 = graph.insertVertex(parent, "v15", "Child 1.5", 0, 0, 60, 40);
+			graph.insertEdge(parent, null, "", v1, v15);
+
 			Object v21 = graph.insertVertex(parent, "v21", "Child 2.1", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", v2, v21);
-
+			
 			Object v22 = graph.insertVertex(parent, "v22", "Child 2.2", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", v2, v22);
 
@@ -114,45 +138,12 @@ public class MainExecution {
 
 			layout.execute(parent);
 		} finally {
+			
 			graph.getModel().endUpdate();
 		}
 
 		
-
-
 		return graph;
 	}
 
-	private static mxGraph createDummyData2() {
-		mxGraph graph = new mxGraph();
-		Object parent = graph.getDefaultParent();
-
-		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph, false);         
-		//layout.setUseBoundingBox(false);
-		//layout.setEdgeRouting(false);
-		//layout.setLevelDistance(30);
-		//layout.setNodeDistance(10);
-
-
-		graph.getModel().beginUpdate();
-		try {
-			Object start = graph.insertVertex(parent, "start", "start", 100,
-					100, 80, 30);
-			for (int i = 0; i < 10; i++) {
-				Object a = graph.insertVertex(parent, "A" + i, "A" + i, 100,
-						100, 80, 30);
-				graph.insertEdge(parent, null, "E" + i, start, a);
-
-				Object b = graph.insertVertex(parent, "B" + i, "B" + i, 100,
-						100, 80, 30);
-				graph.insertEdge(parent, null, "E" + i, a, b);
-				start = a;
-			}
-
-			layout.execute(parent);
-		} finally {
-			graph.getModel().endUpdate();
-		}		
-		return graph;
-	}
 }
