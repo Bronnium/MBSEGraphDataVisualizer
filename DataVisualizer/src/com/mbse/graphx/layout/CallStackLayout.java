@@ -1,20 +1,26 @@
 package com.mbse.graphx.layout;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
+import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.swing.util.mxMorphing;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
+import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxRectangle;
 import com.mxgraph.util.mxResources;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
@@ -31,6 +37,8 @@ import com.mxgraph.view.mxGraphView;
  */
 public class CallStackLayout extends mxGraphLayout {
 
+	private static final double Xspacing = 80;
+	private static final double Yspacing = 60;
 	private boolean edgeRouting;
 	private boolean resizeParent;
 	private boolean horizontal;
@@ -42,6 +50,7 @@ public class CallStackLayout extends mxGraphLayout {
 	private double y0 = 0;
 	private int wrap = 0;
 	private boolean fill = false;
+	private double currentY;
 
 	/**
 	 * 
@@ -66,207 +75,71 @@ public class CallStackLayout extends mxGraphLayout {
 		System.out.println("Time to have fun !");
 		//execute(parent, null);
 
-		callstackexecute(parent,null);
-		
+		callstackexecute(parent);
+
 	}
-	
-	private void callstackexecute(Object parent, Object object) {
-		if (parent == null && object == null)
-			return;
 
-		mxIGraphModel model = graph.getModel();
-		mxGeometry pgeo = model.getGeometry(parent);
+	private void callstackexecute(Object parent) {
 
-		if (parent instanceof mxCell) {
-			mxCell cell = (mxCell) parent;
-			int i = 0;
-			double valueX=0;
-			double valueY=0;
-			int childCount = cell.getChildCount();
+		mxIGraphModel graphDataSource = graph.getModel();
 
-			for (i = 0; i < childCount; i++)
+		System.out.println("root element: "+parent);
+
+		if (parent instanceof mxCell)
+		{
+			mxCell parentCell = (mxCell) parent;
+
+			mxGeometry parentGeo = parentCell.getGeometry();
+
+			for (int i=0; i<parentCell.getEdgeCount() ;i++)
 			{
-				Object child = model.getChildAt(parent, i);
-				if (child instanceof mxCell) {
-					mxCell cellChild = (mxCell) child;
-					mxGeometry bounds = model.getGeometry(cellChild);
-					System.out.println("test");
-					
-					bounds.setX(valueX);
-					valueX+=40;
-					bounds.setY(valueY);
-					valueY+=40;
-					model.setGeometry(cellChild, bounds);
+				
+				mxICell childCell = ((mxCell) parentCell.getEdgeAt(i)).getTarget();
+
+				if (!parentCell.equals(childCell))
+				{
+					mxGeometry childGeo = childCell.getGeometry();
+
+					childGeo.setX(parentGeo.getX()+Xspacing);
+					currentY = currentY + Yspacing;
+					double max = Math.max(currentY, parentGeo.getY()+i*Yspacing);
+					childGeo.setY(max);
+
+					childCell.setGeometry(childGeo);
+
+					Object[] edgesArray = graph.getEdgesBetween(parentCell, childCell, true);
+					localEdgeRouting(edgesArray, parentGeo, childGeo);
+					System.out.println(edgesArray);
+
+					callstackexecute(childCell);
 				}
 				
-			}			
-			
+				
+			}
 		}
+		System.out.println("");
 
 	}
+	
 
-	/**
-	 * Hook for subclassers to return the container size.
-	 */
-	public mxRectangle getContainerSize()
-	{
-		return new mxRectangle();
-	}
+	private void localEdgeRouting(Object[] edgesArray, mxGeometry parentBounds, mxGeometry childBounds) {
+		List<mxPoint> newPoints = new ArrayList<mxPoint>(3);
+		double x = 0;
+		double y = 0;
 
-	public void execute(Object parent, Object root)
-	{
-		if (parent != null)
+		for (int i = 0; i < edgesArray.length; i++)
 		{
-			mxIGraphModel model = graph.getModel();
-			mxGeometry pgeo = model.getGeometry(parent);
-
-			// Handles special case where the parent is either a layer with no
-			// geometry or the current root of the view in which case the size
-			// of the graph's container will be used.
-			if (pgeo == null && model.getParent(parent) == model.getRoot()
-					|| parent == graph.getView().getCurrentRoot())
-			{
-				mxRectangle tmp = getContainerSize();
-				pgeo = new mxGeometry(0, 0, tmp.getWidth(), tmp.getHeight());
-			}
-
-			double fillValue = 0;
-
-			if (pgeo != null)
-			{
-				fillValue = (horizontal) ? pgeo.getHeight() : pgeo.getWidth();
-			}
-
-			fillValue -= 2 * spacing + 2 * border;
-
-			// Handles swimlane start size
-			mxRectangle size = graph.getStartSize(parent);
-			fillValue -= (horizontal) ? size.getHeight() : size.getWidth();
-			double x0 = this.x0 + size.getWidth() + border;
-			double y0 = this.y0 + size.getHeight() + border;
-
-			model.beginUpdate();
-			try
-			{
-				double tmp = 0;
-				mxGeometry last = null;
-				int childCount = model.getChildCount(parent);
-
-				for (int i = 0; i < childCount; i++)
-				{
-					Object child = model.getChildAt(parent, i);
-
-					if (!isVertexIgnored(child) && isVertexMovable(child))
-					{
-						mxGeometry geo = model.getGeometry(child);
-
-						if (geo != null)
-						{
-							geo = (mxGeometry) geo.clone();
-
-							if (wrap != 0 && last != null)
-							{
-
-								if ((horizontal && last.getX()
-										+ last.getWidth() + geo.getWidth() + 2
-										* spacing > wrap)
-										|| (!horizontal && last.getY()
-												+ last.getHeight()
-												+ geo.getHeight() + 2 * spacing > wrap))
-								{
-									last = null;
-
-									if (horizontal)
-									{
-										y0 += tmp + spacing;
-									}
-									else
-									{
-										x0 += tmp + spacing;
-									}
-
-									tmp = 0;
-								}
-							}
-
-							tmp = Math.max(tmp, (horizontal) ? geo
-									.getHeight() : geo.getWidth());
-
-							if (last != null)
-							{
-								if (horizontal)
-								{
-									geo.setX(last.getX() + last.getWidth()
-									+ spacing);
-								}
-								else
-								{
-									geo.setY(last.getY() + last.getHeight()
-									+ spacing);
-								}
-							}
-							else
-							{
-								if (horizontal)
-								{
-									geo.setX(x0);
-								}
-								else
-								{
-									geo.setY(y0);
-								}
-							}
-
-							if (horizontal)
-							{
-								geo.setY(y0);
-							}
-							else
-							{
-								geo.setX(x0);
-							}
-
-							if (fill  && fillValue > 0)
-							{
-								if (horizontal)
-								{
-									geo.setHeight(fillValue);
-								}
-								else
-								{
-									geo.setWidth(fillValue);
-								}
-							}
-
-							model.setGeometry(child, geo);
-							last = geo;
-						}
-					}
-				}
-
-				if (resizeParent && pgeo != null && last != null
-						&& !graph.isCellCollapsed(parent))
-				{
-					pgeo = (mxGeometry) pgeo.clone();
-
-					if (horizontal)
-					{
-						pgeo.setWidth(last.getX() + last.getWidth() + spacing);
-					}
-					else
-					{
-						pgeo
-						.setHeight(last.getY() + last.getHeight()
-						+ spacing);
-					}
-
-					model.setGeometry(parent, pgeo);
-				}
-			}
-			finally
-			{
-				model.endUpdate();
-			}
+			// 3 points edge
+			x = parentBounds.getX() + parentBounds.getWidth() / 4.0; // 25%
+			y = parentBounds.getY() + parentBounds.getHeight();// + currentXOffset;
+			newPoints.add(new mxPoint(x, y));
+			
+			y = childBounds.getY()+ childBounds.getHeight() / 2.0;
+			newPoints.add(new mxPoint(x, y));
+			
+			x = childBounds.getX();
+			newPoints.add(new mxPoint(x, y));
+			setEdgePoints(edgesArray[i], newPoints);
 		}
 
 	}

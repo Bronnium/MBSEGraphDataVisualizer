@@ -85,8 +85,8 @@ public class MainExecution {
 		graph.setCellsDisconnectable(false);
 		graph.setAllowDanglingEdges(false);
 		graph.setCellsEditable(false);
-		final CallStackLayout layout = new CallStackLayout(graph); 
-		//final mxStackLayout layout = new mxStackLayout(graph, true, 20, 10, 10, 10); 
+		//final CallStackLayout layout = new CallStackLayout(graph); 
+		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph,false); 
 		//layout.setUseBoundingBox(false);
 		//layout.setEdgeRouting(false);
 		//layout.setLevelDistance(10); // gestion de l'espacement vertical
@@ -96,7 +96,12 @@ public class MainExecution {
 		graph.getModel().beginUpdate();
 		try {
 			Object root = graph.insertVertex(parent, "treeRoot", "System", 0, 0, 60, 40);
-
+			
+			// ces lignes permettent de créer un conteneur parent
+			//graph.setDefaultParent(root);
+			//Object parent = root;
+			
+			
 			Object v1 = graph.insertVertex(parent, "v1", "System A", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", root, v1);
 
@@ -133,10 +138,12 @@ public class MainExecution {
 			Object v222 = graph.insertVertex(parent, "v222", "Child 2.2.2", 0, 0, 60, 40);
 			graph.insertEdge(parent, null, "", v22, v222);
 
-			Object v31 = graph.insertVertex(parent, "v31", "Child 3.1", 0, 0, 60, 40);
-			graph.insertEdge(parent, null, "", v3, v31);
-
-			layout.execute(parent);
+			//layout.execute(parent);
+			
+			final CallStackLayout layout2 = new CallStackLayout(graph);
+			//layout2.execute(v2);
+			layout2.execute(root);
+			
 		} finally {
 			
 			graph.getModel().endUpdate();

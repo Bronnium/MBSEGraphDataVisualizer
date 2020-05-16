@@ -177,20 +177,24 @@ public class MbseGraphVisualizer extends JFrame {
 	private void btnZoomListener( ActionEvent event ) {
 
 		this.graphComponent.setCenterZoom(true);
+		graphComponent.setKeepSelectionVisibleOnZoom(true);
 		
 		JButton selectedZoom = (JButton) event.getSource();
 		if (selectedZoom.equals(btnZoomIn)) {
 			zoom_scale+=0.1;
+			//((mxGraphComponent) graph).zoomIn();
+			graphComponent.zoomIn();
 
-			graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
+			//graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
 		}
 		else if (selectedZoom.equals(btnZoomOut)) {
 			zoom_scale-=0.1;
 
-			graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
+			graphComponent.zoomOut();
+			//graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
 		}
 		else if (selectedZoom.equals(btnZoomFit)) {
-			graphComponent.setZoomPolicy(mxGraphComponent.ZOOM_POLICY_PAGE);
+			//graphComponent.setZoomPolicy(mxGraphComponent.ZOOM_POLICY_PAGE);
 			graphComponent.zoomActual();
 			zoom_scale = 1;
 		}
@@ -209,12 +213,15 @@ public class MbseGraphVisualizer extends JFrame {
 			// Creates a layout algorithm to be used
 			// with the graph
 			final mxCircleLayout circleLayout = new mxCircleLayout(graph); 
-			circleLayout.execute(parent);
 			circleLayout.setResetEdges(true);
+			circleLayout.execute(parent);
+			
 		}
 		finally
 		{
+			// Default values are 6, 1.5, 20
 			mxMorphing morph = new mxMorphing(graphComponent, 20,1.2, 20);
+			// tester avec (graph, 10, 1.7, 20);
 						
 			morph.addListener(mxEvent.DONE, new mxIEventListener()
 			{
@@ -279,8 +286,38 @@ public class MbseGraphVisualizer extends JFrame {
 	}
 	private void hierarchicalLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		final mxHierarchicalLayout layout = new mxHierarchicalLayout(graph); 
-		layout.execute(parent);
+
+		
+		graph.getModel().beginUpdate();
+		try
+		{
+			// Creates a layout algorithm to be used
+			// with the graph
+			final mxHierarchicalLayout layout = new mxHierarchicalLayout(graph); 
+			layout.execute(parent);
+			
+		}
+		finally
+		{
+			// Default values are 6, 1.5, 20
+			mxMorphing morph = new mxMorphing(graphComponent, 20,1.2, 20);
+			// tester avec (graph, 10, 1.7, 20);
+						
+			morph.addListener(mxEvent.DONE, new mxIEventListener()
+			{
+
+				public void invoke(Object sender, mxEventObject evt)
+				{
+					graph.getModel().endUpdate();
+				}
+
+			});
+
+			morph.startAnimation();
+
+		}
+		
+		
 	}	
 	private void othogonalLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
