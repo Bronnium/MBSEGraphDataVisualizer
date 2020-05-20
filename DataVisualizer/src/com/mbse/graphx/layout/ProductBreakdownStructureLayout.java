@@ -23,6 +23,8 @@ public class ProductBreakdownStructureLayout extends mxCompactTreeLayout {
 		this.setLevelDistance(10); // gestion de l'espacement vertical
 		//layout.setNodeDistance(20); // gestion de l'espacement horizontal
 		
+		graph.setCellStyle("ROUNDED;strokeColor=red;fillColor=green");
+		
 	}
 
 }
