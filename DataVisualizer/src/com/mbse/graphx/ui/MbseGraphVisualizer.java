@@ -12,8 +12,12 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
+import com.mbse.graphx.layout.CallStackLayout;
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxEdgeLabelLayout;
@@ -49,6 +53,9 @@ public class MbseGraphVisualizer extends JFrame {
 	private JButton btnZoomOut;
 	private JButton btnZoomFit;
 	private mxGraphComponent graphComponent;
+	public mxGraphLayout currentAppliedLayout;
+	
+	public int spacing=0;
 
 	public MbseGraphVisualizer() {
 		super("MBSE Graph Visualizer");
@@ -67,6 +74,42 @@ public class MbseGraphVisualizer extends JFrame {
 		contentPane = (JPanel) this.getContentPane();
 		contentPane.add( this.createToolBar(), BorderLayout.NORTH );
 
+		contentPane.add( this.createSecondBar(), BorderLayout.EAST );
+	}
+
+	private Component createSecondBar() {
+		// TODO Auto-generated method stub
+		JToolBar toolBar = new JToolBar();
+		
+		// empeche la barre d'etre bougée
+		toolBar.setFloatable(true);
+		
+		
+		JSlider slide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
+	    slide.setMaximum(100);
+	    slide.setMinimum(0);
+	    slide.setValue(30);
+	    slide.setPaintTicks(true);
+	    slide.setPaintLabels(true);
+	    slide.setMinorTickSpacing(10);
+	    slide.setMajorTickSpacing(20);
+	    slide.addChangeListener(new ChangeListener(){
+	      public void stateChanged(ChangeEvent event){
+	        //label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
+	    	  //System.out.println(((JSlider)event.getSource()).getValue());
+	    	  spacing = ((JSlider)event.getSource()).getValue();
+	    	  System.out.println("applied:" +currentAppliedLayout);
+	    	  if (currentAppliedLayout instanceof CallStackLayout) {
+	    		  CallStackLayout new_name = (CallStackLayout) currentAppliedLayout;
+	    		  new_name.setSpacing(spacing);
+	    		  new_name.execute(graph.getDefaultParent());
+			}
+	      }
+	    }); 
+
+		toolBar.add(slide);
+		
+		return toolBar;
 	}
 
 	private Component createToolBar() {
@@ -212,7 +255,8 @@ public class MbseGraphVisualizer extends JFrame {
 		{
 			// Creates a layout algorithm to be used
 			// with the graph
-			final mxCircleLayout circleLayout = new mxCircleLayout(graph); 
+			final mxCircleLayout circleLayout = new mxCircleLayout(graph);
+			currentAppliedLayout= circleLayout;
 			circleLayout.setResetEdges(true);
 			circleLayout.execute(parent);
 			
@@ -243,6 +287,7 @@ public class MbseGraphVisualizer extends JFrame {
 	private void compactTreeLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
 		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph);
+		currentAppliedLayout= layout;
 		layout.setHorizontal(true);
 		layout.execute(parent);
 	}
@@ -250,37 +295,43 @@ public class MbseGraphVisualizer extends JFrame {
 	private void edgeLabelLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
 		final mxEdgeLabelLayout layout = new mxEdgeLabelLayout(graph); 
+		currentAppliedLayout= layout;
 		layout.execute(parent);
 		graph.repaint();
 	}
 	private void fastOrganicLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
 		final mxFastOrganicLayout layout = new mxFastOrganicLayout(graph); 
+		currentAppliedLayout= layout;
 		layout.execute(parent);
 		graph.repaint();
 	}
 
 	private void organicLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		final mxOrganicLayout layout = new mxOrganicLayout(graph); 
+		final mxOrganicLayout layout = new mxOrganicLayout(graph);
+		currentAppliedLayout= layout;
 		layout.execute(parent);
 		graph.repaint();
 	}
 	private void parralelEdgeLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
 		final mxParallelEdgeLayout layout = new mxParallelEdgeLayout(graph); 
+		currentAppliedLayout= layout;
 		layout.execute(parent);
 		graph.repaint();
 	}
 	private void partitionLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		final mxPartitionLayout layout = new mxPartitionLayout(graph); 
+		final mxPartitionLayout layout = new mxPartitionLayout(graph);
+		currentAppliedLayout= layout;
 		layout.execute(parent);
 		graph.repaint();
 	}
 	private void stackLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		final mxStackLayout layout = new mxStackLayout(graph, false, 10, 10, 10, 10); 
+		final mxStackLayout layout = new mxStackLayout(graph, false, 10, 10, 10, 10);
+		currentAppliedLayout= layout;
 		layout.execute(parent);
 		graph.repaint();
 	}
@@ -293,7 +344,10 @@ public class MbseGraphVisualizer extends JFrame {
 		{
 			// Creates a layout algorithm to be used
 			// with the graph
-			final mxHierarchicalLayout layout = new mxHierarchicalLayout(graph); 
+			final mxHierarchicalLayout layout = new mxHierarchicalLayout(graph);
+			currentAppliedLayout= layout;
+			//
+			System.out.println(spacing);
 			layout.execute(parent);
 			
 		}

@@ -1,16 +1,22 @@
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import com.mbse.graphx.FoldableTree;
 import com.mbse.graphx.layout.CallStackLayout;
+import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizer;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.model.mxICell;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
@@ -78,8 +84,60 @@ public class MainExecution {
 		}
 		return;
 	}
+	
+	//static Map<String,Boolean> foldRegistry=new HashMap<String,Boolean>();
+	
+	private static mxGraph createDummyData2() {
+			mxGraph graph = new mxGraph() {
+	
+				/*public boolean isCellFoldable(Object cell, boolean collapse)
+				{
+					mxICell c=(mxICell)cell;
+					
+					boolean result=c.getChildCount()!=0 && c!=c.getParent();
+					String s=(String)((mxICell)cell).getValue();
+					
+					if(foldRegistry.containsKey(s)) {
+						result=foldRegistry.get(s);
+					}
+					return result;
+				}*/
+	
+			};
+	
+			Object parent = graph.getDefaultParent();
+	
+			graph.getModel().beginUpdate();
+			
+			try
+			{
+		
+				mxICell containerNode=(mxICell)graph.insertVertex(parent, null, "a", 10, 10, 100, 100, "");
+				mxICell sampleNode=(mxICell)graph.insertVertex(parent, null, "s", 200, 10, 100, 100, "");
+				Object edge = graph.insertEdge(parent, null, null, containerNode, sampleNode);
+				
+				mxICell containerNew=(mxICell)graph.insertVertex(parent, null, "B", 50, 50, 100, 100, "");
+				
+	
+				mxCell titleCell = new mxCell("Title",new mxGeometry(20,60,60,30),"");
+				//titleCell.setVertex(true);
+				
+				//mxCell title2Cell = new mxCell("Title2",new mxGeometry(20,60,60,30),"");
+				//title2Cell.setVertex(true);
+	
+				
+				graph.addCell(edge, containerNode);
+				//graph.addCell(title2Cell, sampleNode);
+		       
+			}
+			finally
+			{
+				graph.getModel().endUpdate();
+			}
+			return graph;
+	}
 	private static mxGraph createDummyData() {
-		mxGraph graph = new mxGraph();
+		mxGraph graph = new FoldableTree();
 		Object parent = graph.getDefaultParent();
 
 		graph.setCellsDisconnectable(false);
@@ -141,6 +199,8 @@ public class MainExecution {
 			//layout.execute(parent);
 			
 			final CallStackLayout layout2 = new CallStackLayout(graph);
+			graphicalInterface.currentAppliedLayout = layout2;
+			layout2.setSpacing(80);
 			//layout2.execute(v2);
 			layout2.execute(root);
 			

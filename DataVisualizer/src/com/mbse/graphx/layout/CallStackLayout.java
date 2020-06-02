@@ -37,8 +37,8 @@ import com.mxgraph.view.mxGraphView;
  */
 public class CallStackLayout extends mxGraphLayout {
 
-	private static final double Xspacing = 80;
-	private static final double Yspacing = 60;
+	private double Xspacing = 80;
+	private double Yspacing = 60;
 	private boolean edgeRouting;
 	private boolean resizeParent;
 	private boolean horizontal;
@@ -58,7 +58,16 @@ public class CallStackLayout extends mxGraphLayout {
 	 */
 	public CallStackLayout(mxGraph graph) {
 		super(graph);
+		
+		CallStackLayout layout = this;
+        graph.addListener(mxEvent.FOLD_CELLS,  new mxIEventListener() {
 
+            @Override
+            public void invoke(Object sender, mxEventObject evt) {
+                System.out.println("folding repositioning");
+            	layout.execute(graph.getDefaultParent());
+            }
+        });
 		//this.setResetEdges(true);
 		//this.setLevelDistance(10); // gestion de l'espacement vertical
 		//layout.setNodeDistance(20); // gestion de l'espacement horizontal
@@ -81,14 +90,17 @@ public class CallStackLayout extends mxGraphLayout {
 
 	private void callstackexecute(Object parent) {
 
-		mxIGraphModel graphDataSource = graph.getModel();
-
+		
 		System.out.println("root element: "+parent);
 
 		if (parent instanceof mxCell)
 		{
 			mxCell parentCell = (mxCell) parent;
 
+			if(!parentCell.isVertex()) {
+				parentCell = (mxCell) parentCell.getChildAt(0);
+			}
+			
 			mxGeometry parentGeo = parentCell.getGeometry();
 
 			for (int i=0; i<parentCell.getEdgeCount() ;i++)
@@ -142,6 +154,11 @@ public class CallStackLayout extends mxGraphLayout {
 			setEdgePoints(edgesArray[i], newPoints);
 		}
 
+	}
+
+	public void setSpacing(int spacing2) {
+		// TODO Auto-generated method stub
+		Yspacing = spacing2;
 	}
 }
 

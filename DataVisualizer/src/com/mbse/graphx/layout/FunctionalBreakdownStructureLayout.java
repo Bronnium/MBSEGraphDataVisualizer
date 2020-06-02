@@ -35,7 +35,7 @@ public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout {
         // interdire globalement le déplacement de tous les objets dans le graph
         graph.setCellsMovable(false);
         
-        
+        //graph.getView()
 
 
 		
