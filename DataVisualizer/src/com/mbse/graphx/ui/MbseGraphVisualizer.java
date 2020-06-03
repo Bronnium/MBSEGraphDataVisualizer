@@ -1,12 +1,14 @@
 package com.mbse.graphx.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,7 +19,9 @@ import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.mbse.graphx.connectors.RhapsodyConnector;
 import com.mbse.graphx.layout.CallStackLayout;
+import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxEdgeLabelLayout;
@@ -68,46 +72,91 @@ public class MbseGraphVisualizer extends JFrame {
 
 		initUI();
 	}
+	
+	public MbseGraphVisualizer(String title) {
+		super(title);
+		// sets size
+		this.setSize(800, 600);
+		// centers the frame
+		this.setLocationRelativeTo(null);
+		// define behavior of close button
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+		initUI();
+	}
 
 	private void initUI() {
 		// Construction et injection de la barre d'outils
 		contentPane = (JPanel) this.getContentPane();
-		contentPane.add( this.createToolBar(), BorderLayout.NORTH );
+		//contentPane.add( this.createToolBar(), BorderLayout.NORTH );
 
 		contentPane.add( this.createSecondBar(), BorderLayout.EAST );
+		
 	}
 
 	private Component createSecondBar() {
 		// TODO Auto-generated method stub
-		JToolBar toolBar = new JToolBar();
+		JToolBar toolBar = new JToolBar("Layout Properties",JToolBar.VERTICAL);
 		
 		// empeche la barre d'etre bougée
-		toolBar.setFloatable(true);
+		toolBar.setFloatable(false);
 		
 		
-		JSlider slide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
-	    slide.setMaximum(100);
-	    slide.setMinimum(0);
-	    slide.setValue(30);
-	    slide.setPaintTicks(true);
-	    slide.setPaintLabels(true);
-	    slide.setMinorTickSpacing(10);
-	    slide.setMajorTickSpacing(20);
-	    slide.addChangeListener(new ChangeListener(){
+		JSlider horizontalSpacingSlide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
+		horizontalSpacingSlide.setMaximum(100);
+		horizontalSpacingSlide.setMinimum(0);
+		horizontalSpacingSlide.setValue(30);
+		horizontalSpacingSlide.setPaintTicks(true);
+		horizontalSpacingSlide.setPaintLabels(true);
+		horizontalSpacingSlide.setMinorTickSpacing(10);
+		horizontalSpacingSlide.setMajorTickSpacing(20);
+		horizontalSpacingSlide.addChangeListener(new ChangeListener(){
 	      public void stateChanged(ChangeEvent event){
 	        //label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
 	    	  //System.out.println(((JSlider)event.getSource()).getValue());
 	    	  spacing = ((JSlider)event.getSource()).getValue();
 	    	  System.out.println("applied:" +currentAppliedLayout);
-	    	  if (currentAppliedLayout instanceof CallStackLayout) {
-	    		  CallStackLayout new_name = (CallStackLayout) currentAppliedLayout;
-	    		  new_name.setSpacing(spacing);
-	    		  new_name.execute(graph.getDefaultParent());
+	    	  if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
+	    		  ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
+	    		  pbsLayout.setNodeDistance(spacing);
+	    		  pbsLayout.execute(graph.getDefaultParent());
 			}
 	      }
 	    }); 
 
-		toolBar.add(slide);
+		toolBar.add(horizontalSpacingSlide);
+		
+		JSlider verticalSpacingSlide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
+		verticalSpacingSlide.setMaximum(100);
+		verticalSpacingSlide.setMinimum(0);
+		verticalSpacingSlide.setValue(30);
+		verticalSpacingSlide.setPaintTicks(true);
+		verticalSpacingSlide.setPaintLabels(true);
+		verticalSpacingSlide.setMinorTickSpacing(10);
+		verticalSpacingSlide.setMajorTickSpacing(20);
+		verticalSpacingSlide.addChangeListener(new ChangeListener(){
+	      public void stateChanged(ChangeEvent event){
+	        //label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
+	    	  //System.out.println(((JSlider)event.getSource()).getValue());
+	    	  spacing = ((JSlider)event.getSource()).getValue();
+	    	  System.out.println("applied:" +currentAppliedLayout);
+	    	  if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
+	    		  ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
+	    		  pbsLayout.setLevelDistance(spacing);
+	    		  pbsLayout.execute(graph.getDefaultParent());
+			}
+	      }
+	    }); 
+
+		toolBar.add(verticalSpacingSlide);
+		
+		JButton btnSaveDiagram = new JButton("Save diagram");
+		btnSaveDiagram.setText("<html><color=blue><b>Edit</b></font></html>");
+		btnSaveDiagram.setBorderPainted(true);
+		btnSaveDiagram.setBorder(BorderFactory.createLineBorder(Color.blue));
+		//btnSaveDiagram.setToolTipText("Save diagram");
+		btnSaveDiagram.addActionListener(this::saveDiagramListener);
+		toolBar.add(btnSaveDiagram);
 		
 		return toolBar;
 	}
@@ -208,10 +257,7 @@ public class MbseGraphVisualizer extends JFrame {
 
 		toolBar.addSeparator(new Dimension(100, 10));
 
-		JButton btnSaveDiagram = new JButton("Save diagram");
-		btnSaveDiagram.setToolTipText("Save diagram");
-		btnSaveDiagram.addActionListener(this::saveDiagramListener);
-		toolBar.add(btnSaveDiagram);
+
 
 
 		return toolBar;
@@ -389,6 +435,7 @@ public class MbseGraphVisualizer extends JFrame {
 		this.graph = graphData; 
 
 		graphComponent = new mxGraphComponent(graphData);
+		
 		getContentPane().add(graphComponent);
 		
 		graphComponent.getGraphControl().addMouseListener(new MouseAdapter()
@@ -415,5 +462,10 @@ public class MbseGraphVisualizer extends JFrame {
 	public mxGraph getGraphModel() {
 		// TODO Auto-generated method stub
 		return graph;
+	}
+
+	public void connect(RhapsodyConnector rhapsodyConnector, Class<ProductBreakdownStructureLayout> class1) throws InstantiationException, IllegalAccessException {
+		ProductBreakdownStructureLayout pbsLayout = class1.newInstance();
+		
 	}
 }

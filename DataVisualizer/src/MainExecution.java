@@ -10,6 +10,7 @@ import javax.swing.UIManager;
 import com.mbse.graphx.FoldableTree;
 import com.mbse.graphx.layout.CallStackLayout;
 import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
+import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizer;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxStackLayout;
@@ -18,6 +19,9 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxEvent;
+import com.mxgraph.util.mxEventObject;
+import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 
 public class MainExecution {
@@ -39,7 +43,7 @@ public class MainExecution {
 		}
 		
 		// déclaration du Visualiseur
-		graphicalInterface = new MbseGraphVisualizer();
+		graphicalInterface = new MbseGraphVisualizer("Product Breakdown Structure Preview");
 
 		// création du graph depuis le modèle avec SnecmaML
 		graphicalInterface.setGraphData(createDummyData());
@@ -59,9 +63,6 @@ public class MainExecution {
 
 		// récupération des position des objects
 		getObjectPositions();
-
-
-		//((mxCell) graphModel.getCell("test")).getGeometry().getX());;
 	}
 
 
@@ -85,71 +86,10 @@ public class MainExecution {
 		return;
 	}
 	
-	//static Map<String,Boolean> foldRegistry=new HashMap<String,Boolean>();
-	
-	private static mxGraph createDummyData2() {
-			mxGraph graph = new mxGraph() {
-	
-				/*public boolean isCellFoldable(Object cell, boolean collapse)
-				{
-					mxICell c=(mxICell)cell;
-					
-					boolean result=c.getChildCount()!=0 && c!=c.getParent();
-					String s=(String)((mxICell)cell).getValue();
-					
-					if(foldRegistry.containsKey(s)) {
-						result=foldRegistry.get(s);
-					}
-					return result;
-				}*/
-	
-			};
-	
-			Object parent = graph.getDefaultParent();
-	
-			graph.getModel().beginUpdate();
-			
-			try
-			{
-		
-				mxICell containerNode=(mxICell)graph.insertVertex(parent, null, "a", 10, 10, 100, 100, "");
-				mxICell sampleNode=(mxICell)graph.insertVertex(parent, null, "s", 200, 10, 100, 100, "");
-				Object edge = graph.insertEdge(parent, null, null, containerNode, sampleNode);
-				
-				mxICell containerNew=(mxICell)graph.insertVertex(parent, null, "B", 50, 50, 100, 100, "");
-				
-	
-				mxCell titleCell = new mxCell("Title",new mxGeometry(20,60,60,30),"");
-				//titleCell.setVertex(true);
-				
-				//mxCell title2Cell = new mxCell("Title2",new mxGeometry(20,60,60,30),"");
-				//title2Cell.setVertex(true);
-	
-				
-				graph.addCell(edge, containerNode);
-				//graph.addCell(title2Cell, sampleNode);
-		       
-			}
-			finally
-			{
-				graph.getModel().endUpdate();
-			}
-			return graph;
-	}
+
 	private static mxGraph createDummyData() {
 		mxGraph graph = new FoldableTree();
 		Object parent = graph.getDefaultParent();
-
-		graph.setCellsDisconnectable(false);
-		graph.setAllowDanglingEdges(false);
-		graph.setCellsEditable(false);
-		//final CallStackLayout layout = new CallStackLayout(graph); 
-		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph,false); 
-		//layout.setUseBoundingBox(false);
-		//layout.setEdgeRouting(false);
-		//layout.setLevelDistance(10); // gestion de l'espacement vertical
-		//layout.setNodeDistance(20); // gestion de l'espacement horizontal
-
 
 		graph.getModel().beginUpdate();
 		try {
@@ -198,11 +138,18 @@ public class MainExecution {
 
 			//layout.execute(parent);
 			
-			final CallStackLayout layout2 = new CallStackLayout(graph);
-			graphicalInterface.currentAppliedLayout = layout2;
-			layout2.setSpacing(80);
-			//layout2.execute(v2);
-			layout2.execute(root);
+			final ProductBreakdownStructureLayout layout = new ProductBreakdownStructureLayout(graph);
+			graphicalInterface.currentAppliedLayout = layout;
+			layout.execute(parent);
+			
+	        graph.addListener(mxEvent.FOLD_CELLS,  new mxIEventListener() {
+
+	            @Override
+	            public void invoke(Object sender, mxEventObject evt) {
+	                System.out.println("folding repositioning");
+	            	layout.execute(graph.getDefaultParent());
+	            }
+	        });
 			
 		} finally {
 			

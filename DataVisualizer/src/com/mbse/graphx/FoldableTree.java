@@ -15,7 +15,20 @@ import com.mxgraph.view.mxGraph;
  */
 public class FoldableTree extends mxGraph
 {
-    /**
+    public FoldableTree() {
+    	boolean value = false;
+		setAllowDanglingEdges(value);
+		setAllowLoops(value);
+		setCellsBendable(value);
+		setCellsCloneable(value);
+		setCellsDeletable(value);
+		setCellsDisconnectable(value);
+		setCellsEditable(value);
+		setAutoOrigin(true);
+		
+	}
+	
+	/**
      * Need to add some conditions that will get us the expand/collapse icon on the vertex.
      */
     @Override
