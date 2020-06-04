@@ -5,13 +5,17 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -58,7 +62,7 @@ public class MbseGraphVisualizer extends JFrame {
 	private JButton btnZoomFit;
 	private mxGraphComponent graphComponent;
 	public mxGraphLayout currentAppliedLayout;
-	
+
 	public int spacing=0;
 
 	public MbseGraphVisualizer() {
@@ -72,7 +76,7 @@ public class MbseGraphVisualizer extends JFrame {
 
 		initUI();
 	}
-	
+
 	public MbseGraphVisualizer(String title) {
 		super(title);
 		// sets size
@@ -91,17 +95,17 @@ public class MbseGraphVisualizer extends JFrame {
 		//contentPane.add( this.createToolBar(), BorderLayout.NORTH );
 
 		contentPane.add( this.createSecondBar(), BorderLayout.EAST );
-		
+
 	}
 
 	private Component createSecondBar() {
 		// TODO Auto-generated method stub
 		JToolBar toolBar = new JToolBar("Layout Properties",JToolBar.VERTICAL);
-		
+
 		// empeche la barre d'etre bougée
 		toolBar.setFloatable(false);
-		
-		
+
+		toolBar.add(new JLabel("Set horizontal spacing"));
 		JSlider horizontalSpacingSlide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
 		horizontalSpacingSlide.setMaximum(100);
 		horizontalSpacingSlide.setMinimum(0);
@@ -111,21 +115,24 @@ public class MbseGraphVisualizer extends JFrame {
 		horizontalSpacingSlide.setMinorTickSpacing(10);
 		horizontalSpacingSlide.setMajorTickSpacing(20);
 		horizontalSpacingSlide.addChangeListener(new ChangeListener(){
-	      public void stateChanged(ChangeEvent event){
-	        //label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
-	    	  //System.out.println(((JSlider)event.getSource()).getValue());
-	    	  spacing = ((JSlider)event.getSource()).getValue();
-	    	  System.out.println("applied:" +currentAppliedLayout);
-	    	  if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
-	    		  ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
-	    		  pbsLayout.setNodeDistance(spacing);
-	    		  pbsLayout.execute(graph.getDefaultParent());
+			public void stateChanged(ChangeEvent event){
+				//label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
+				if (horizontalSpacingSlide.getValueIsAdjusting()) {
+		            return;
+		        }
+				spacing = ((JSlider)event.getSource()).getValue();
+				if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
+					ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
+					pbsLayout.setNodeDistance(spacing);
+					System.out.println("Execute with: "+((JSlider)event.getSource()).getValue());
+					pbsLayout.execute(graph.getDefaultParent());
+				}
 			}
-	      }
-	    }); 
+		}); 
 
 		toolBar.add(horizontalSpacingSlide);
-		
+
+		toolBar.add(new JLabel("Set vertical spacing"));
 		JSlider verticalSpacingSlide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
 		verticalSpacingSlide.setMaximum(100);
 		verticalSpacingSlide.setMinimum(0);
@@ -135,29 +142,48 @@ public class MbseGraphVisualizer extends JFrame {
 		verticalSpacingSlide.setMinorTickSpacing(10);
 		verticalSpacingSlide.setMajorTickSpacing(20);
 		verticalSpacingSlide.addChangeListener(new ChangeListener(){
-	      public void stateChanged(ChangeEvent event){
-	        //label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
-	    	  //System.out.println(((JSlider)event.getSource()).getValue());
-	    	  spacing = ((JSlider)event.getSource()).getValue();
-	    	  System.out.println("applied:" +currentAppliedLayout);
-	    	  if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
-	    		  ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
-	    		  pbsLayout.setLevelDistance(spacing);
-	    		  pbsLayout.execute(graph.getDefaultParent());
+			public void stateChanged(ChangeEvent event){
+				//label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
+				if (verticalSpacingSlide.getValueIsAdjusting()) {
+		            return;
+		        }
+				spacing = ((JSlider)event.getSource()).getValue();
+				if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
+					ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
+					pbsLayout.setLevelDistance(spacing);
+					System.out.println("Execute with: "+((JSlider)event.getSource()).getValue());
+					pbsLayout.execute(graph.getDefaultParent());
+				}
 			}
-	      }
-	    }); 
+		}); 
 
 		toolBar.add(verticalSpacingSlide);
-		
+
+		JCheckBox checkbox = new JCheckBox("Display last children over");
+		checkbox.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				JCheckBox cbLog = (JCheckBox) e.getSource();
+				if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
+					ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
+					
+					pbsLayout.setLeafOver(cbLog.isSelected());
+					pbsLayout.execute(graph.getDefaultParent());
+				}
+
+			}
+		});
+		toolBar.add(checkbox);
+
 		JButton btnSaveDiagram = new JButton("Save diagram");
-		btnSaveDiagram.setText("<html><color=blue><b>Edit</b></font></html>");
+		btnSaveDiagram.setText("<html><color=blue><b>Save diagram</b></font></html>");
 		btnSaveDiagram.setBorderPainted(true);
 		btnSaveDiagram.setBorder(BorderFactory.createLineBorder(Color.blue));
 		//btnSaveDiagram.setToolTipText("Save diagram");
 		btnSaveDiagram.addActionListener(this::saveDiagramListener);
 		toolBar.add(btnSaveDiagram);
-		
+
 		return toolBar;
 	}
 
@@ -267,7 +293,7 @@ public class MbseGraphVisualizer extends JFrame {
 
 		this.graphComponent.setCenterZoom(true);
 		graphComponent.setKeepSelectionVisibleOnZoom(true);
-		
+
 		JButton selectedZoom = (JButton) event.getSource();
 		if (selectedZoom.equals(btnZoomIn)) {
 			zoom_scale+=0.1;
@@ -295,7 +321,7 @@ public class MbseGraphVisualizer extends JFrame {
 
 	private void circularLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
-		
+
 		graph.getModel().beginUpdate();
 		try
 		{
@@ -305,14 +331,14 @@ public class MbseGraphVisualizer extends JFrame {
 			currentAppliedLayout= circleLayout;
 			circleLayout.setResetEdges(true);
 			circleLayout.execute(parent);
-			
+
 		}
 		finally
 		{
 			// Default values are 6, 1.5, 20
 			mxMorphing morph = new mxMorphing(graphComponent, 20,1.2, 20);
 			// tester avec (graph, 10, 1.7, 20);
-						
+
 			morph.addListener(mxEvent.DONE, new mxIEventListener()
 			{
 
@@ -326,8 +352,8 @@ public class MbseGraphVisualizer extends JFrame {
 			morph.startAnimation();
 
 		}
-		
-		
+
+
 	}
 	//compactTreeLayoutListener
 	private void compactTreeLayoutListener( ActionEvent event ) {
@@ -384,7 +410,7 @@ public class MbseGraphVisualizer extends JFrame {
 	private void hierarchicalLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
 
-		
+
 		graph.getModel().beginUpdate();
 		try
 		{
@@ -395,14 +421,14 @@ public class MbseGraphVisualizer extends JFrame {
 			//
 			System.out.println(spacing);
 			layout.execute(parent);
-			
+
 		}
 		finally
 		{
 			// Default values are 6, 1.5, 20
 			mxMorphing morph = new mxMorphing(graphComponent, 20,1.2, 20);
 			// tester avec (graph, 10, 1.7, 20);
-						
+
 			morph.addListener(mxEvent.DONE, new mxIEventListener()
 			{
 
@@ -416,8 +442,8 @@ public class MbseGraphVisualizer extends JFrame {
 			morph.startAnimation();
 
 		}
-		
-		
+
+
 	}	
 	private void othogonalLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
@@ -435,16 +461,16 @@ public class MbseGraphVisualizer extends JFrame {
 		this.graph = graphData; 
 
 		graphComponent = new mxGraphComponent(graphData);
-		
+
 		getContentPane().add(graphComponent);
-		
+
 		graphComponent.getGraphControl().addMouseListener(new MouseAdapter()
 		{
-		
+
 			public void mouseReleased(MouseEvent e)
 			{
 				Object cell = graphComponent.getCellAt(e.getX(), e.getY());
-				
+
 				if (cell != null)
 				{
 					mxGeometry cellGeometry = graph.getCellGeometry(cell);
@@ -466,6 +492,6 @@ public class MbseGraphVisualizer extends JFrame {
 
 	public void connect(RhapsodyConnector rhapsodyConnector, Class<ProductBreakdownStructureLayout> class1) throws InstantiationException, IllegalAccessException {
 		ProductBreakdownStructureLayout pbsLayout = class1.newInstance();
-		
+
 	}
 }
