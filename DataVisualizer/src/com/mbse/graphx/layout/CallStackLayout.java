@@ -60,17 +60,6 @@ public class CallStackLayout extends mxGraphLayout {
 		super(graph);
 		
 		CallStackLayout layout = this;
-        graph.addListener(mxEvent.FOLD_CELLS,  new mxIEventListener() {
-
-            @Override
-            public void invoke(Object sender, mxEventObject evt) {
-                System.out.println("folding repositioning");
-            	layout.execute(graph.getDefaultParent());
-            }
-        });
-		//this.setResetEdges(true);
-		//this.setLevelDistance(10); // gestion de l'espacement vertical
-		//layout.setNodeDistance(20); // gestion de l'espacement horizontal
 
 	}
 

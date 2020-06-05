@@ -109,7 +109,7 @@ public class MbseGraphVisualizer extends JFrame {
 		JSlider horizontalSpacingSlide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
 		horizontalSpacingSlide.setMaximum(100);
 		horizontalSpacingSlide.setMinimum(0);
-		horizontalSpacingSlide.setValue(30);
+		horizontalSpacingSlide.setValue(20);
 		horizontalSpacingSlide.setPaintTicks(true);
 		horizontalSpacingSlide.setPaintLabels(true);
 		horizontalSpacingSlide.setMinorTickSpacing(10);
@@ -124,7 +124,6 @@ public class MbseGraphVisualizer extends JFrame {
 				if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
 					ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
 					pbsLayout.setNodeDistance(spacing);
-					System.out.println("Execute with: "+((JSlider)event.getSource()).getValue());
 					pbsLayout.execute(graph.getDefaultParent());
 				}
 			}
@@ -136,7 +135,7 @@ public class MbseGraphVisualizer extends JFrame {
 		JSlider verticalSpacingSlide = new JSlider(JSlider.HORIZONTAL, 0, 30, 15);
 		verticalSpacingSlide.setMaximum(100);
 		verticalSpacingSlide.setMinimum(0);
-		verticalSpacingSlide.setValue(30);
+		verticalSpacingSlide.setValue(10);
 		verticalSpacingSlide.setPaintTicks(true);
 		verticalSpacingSlide.setPaintLabels(true);
 		verticalSpacingSlide.setMinorTickSpacing(10);
@@ -151,7 +150,6 @@ public class MbseGraphVisualizer extends JFrame {
 				if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
 					ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
 					pbsLayout.setLevelDistance(spacing);
-					System.out.println("Execute with: "+((JSlider)event.getSource()).getValue());
 					pbsLayout.execute(graph.getDefaultParent());
 				}
 			}
@@ -464,18 +462,20 @@ public class MbseGraphVisualizer extends JFrame {
 
 		getContentPane().add(graphComponent);
 
+		
 		graphComponent.getGraphControl().addMouseListener(new MouseAdapter()
 		{
 
 			public void mouseReleased(MouseEvent e)
 			{
 				Object cell = graphComponent.getCellAt(e.getX(), e.getY());
-
+				
 				if (cell != null)
 				{
 					mxGeometry cellGeometry = graph.getCellGeometry(cell);
+					
 					System.out.println("cell="+graph.getLabel(cell));
-					System.out.println("X:"+cellGeometry.getX()+"Y:"+cellGeometry.getY());
+					System.out.println("X:"+cellGeometry.getX()+"Y:"+cellGeometry.getY()+"/"+graph.getEdges(cell).length);
 				}
 			}
 		});
