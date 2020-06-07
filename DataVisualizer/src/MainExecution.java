@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import com.mbse.graphx.FoldableTree;
@@ -14,6 +15,7 @@ import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizer;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxStackLayout;
+import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
@@ -43,10 +45,11 @@ public class MainExecution {
 		}
 		
 		// déclaration du Visualiseur
-		graphicalInterface = new MbseGraphVisualizer("Product Breakdown Structure Preview");
+		//graphicalInterface = new MbseGraphVisualizer("Product Breakdown Structure Preview");
+		graphicalInterface = new MbseGraphVisualizer("Functional Behavior Preview");
 
 		// création du graph depuis le modèle avec SnecmaML
-		graphicalInterface.setGraphData(createDummyData());
+		graphicalInterface.setGraphData(createBehaviorDummyData());
 
 		// les différents layouts sont testés dans le preview
 		// on recupere le resultat du graph de donnée
@@ -63,6 +66,50 @@ public class MainExecution {
 
 		// récupération des position des objects
 		getObjectPositions();
+	}
+
+
+	private static mxGraph createBehaviorDummyData() {
+		mxGraph graph = new mxGraph();
+		
+		Object parent = graph.getDefaultParent();
+		
+		
+
+		try
+		{
+		
+			Object root = graph.insertVertex(parent, "F1", "Fonction 1", 0, 0, 60, 40, "column");
+			
+			Object v11 = graph.insertVertex(root, "F1.1", "Fonction 1.1", 0, 0, 60, 40);
+			Object v12 = graph.insertVertex(root, "F1.2", "Fonction 1.2", 0, 0, 80, 30);
+			Object v13 = graph.insertVertex(root, "F1.3", "Fonction 1.3", 0, 0, 80, 30);
+			
+			graph.insertEdge(parent, null, "", root, v11);
+			graph.insertEdge(parent, null, "", root, v12);
+			
+			graph.insertEdge(parent, null, "", v13, root);
+			
+
+			graph.insertEdge(parent, null, "", v11, v13);
+			graph.insertEdge(parent, null, "", v12, v13);
+			
+			// Installs auto layout for all levels
+			mxHierarchicalLayout layout = new mxHierarchicalLayout(graph, SwingConstants.WEST);
+			
+			
+			//layout.edgeStyle=4;
+			//layout.intraCellSpacing=20;
+			//layout.interRankCellSpacing=70;
+			
+			layout.execute(graph.getDefaultParent());
+		}
+		finally
+		{
+			// Updates the display
+			graph.getModel().endUpdate();
+		}
+		return graph;
 	}
 
 
@@ -87,7 +134,7 @@ public class MainExecution {
 	}
 	
 
-	private static mxGraph createDummyData() {
+	private static mxGraph createStructureDummyData() {
 		mxGraph graph = new FoldableTree();
 		Object parent = graph.getDefaultParent();
 
