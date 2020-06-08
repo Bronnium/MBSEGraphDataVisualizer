@@ -1,5 +1,6 @@
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,7 +10,9 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import com.mbse.graphx.FoldableTree;
+import com.mbse.graphx.Port;
 import com.mbse.graphx.layout.CallStackLayout;
+import com.mbse.graphx.layout.FunctionalBehaviorLayout;
 import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizer;
@@ -21,9 +24,12 @@ import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.util.mxConstants;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
+import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
+import com.mxgraph.view.mxEdgeStyle;
 import com.mxgraph.view.mxGraph;
 
 public class MainExecution {
@@ -69,8 +75,54 @@ public class MainExecution {
 	}
 
 
-	private static mxGraph createBehaviorDummyData() {
-		mxGraph graph = new mxGraph();
+	
+	final static int PORT_DIAMETER = 20;
+
+	final static int PORT_RADIUS = PORT_DIAMETER / 2;
+/*	private static mxGraph createBehaviorDummyData() {
+		mxGraph graph = new mxGraph() {
+			
+			// Ports are not used as terminals for edges, they are
+			// only used to compute the graphical connection point
+			public boolean isPort(Object cell)
+			{
+				mxGeometry geo = getCellGeometry(cell);
+				
+				return (geo != null) ? geo.isRelative() : false;
+			}
+			
+			// Implements a tooltip that shows the actual
+			// source and target of an edge
+			public String getToolTipForCell(Object cell)
+			{
+				if (model.isEdge(cell))
+				{
+					return convertValueToString(model.getTerminal(cell, true)) + " -> " +
+						convertValueToString(model.getTerminal(cell, false));
+				}
+				
+				return super.getToolTipForCell(cell);
+			}
+			
+			// Removes the folding icon and disables any folding
+			public boolean isCellFoldable(Object cell, boolean collapse)
+			{
+				return false;
+			}
+		};
+		
+		
+		// Sets the default edge style
+		Map<String, Object> style = graph.getStylesheet().getDefaultEdgeStyle();
+		style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.ElbowConnector);
+		//EDGESTYLE_SIDETOSIDE
+		//ElbowConnector
+	
+		//style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.OrthConnector);
+		style.put(mxConstants.STYLE_STROKECOLOR, "red");
+		//style.put(mxConstants.STYLE_STROKEWIDTH, 2);
+		
+		graph.setAllowDanglingEdges(false);
 		
 		Object parent = graph.getDefaultParent();
 		
@@ -78,25 +130,143 @@ public class MainExecution {
 
 		try
 		{
+			//String style1 =mxConstants.STYLE_LABEL_POSITION+"="+mxConstants.ALIGN_LEFT+";";
+			//String style1 = mxConstants.STYLE_VERTICAL_LABEL_POSITION+"="+mxConstants.ALIGN_TOP+";";
+			
+			String style1 = mxConstants.STYLE_FILLCOLOR + "=#FFFFFF";
+			
+			// manual setting
+			mxCell root = (mxCell) graph.insertVertex(parent, "F1", "Fonction 1", 40, 20, 450, 300,style1);
+
+			//mxCell root = (mxCell) graph.insertVertex(parent, "F1", "Fonction 1", 0, 0, 450, 300,style1);
+			//root.setConnectable(false);
+			
+			//graph.addCell(new Port("Name In", SwingConstants.LEFT));
+			ArrayList<Port> listOfInputs = new ArrayList<Port>();
+			//Port rootPortIn1 = new Port("Name In", SwingConstants.LEFT);
+			//Port rootPortIn2 = new Port("Name In", SwingConstants.LEFT);
+			
+			//graph.addCell(rootPortIn1, root);
+			//graph.addCell(rootPortIn2, root);
+	
+			listOfInputs.add(rootPortIn1);
+			listOfInputs.add(rootPortIn1);
+			Utilies.positionPort(listOfInputs);
+			
+			ArrayList<Port> listOfOutputs = new ArrayList<Port>();
+			Port rootPortOut1 = new Port("Name out",SwingConstants.RIGHT);
+			graph.addCell(rootPortOut1, root);
+			
+			listOfOutputs.add(rootPortOut1);
+			Utilies.positionPort(listOfOutputs);
 		
-			Object root = graph.insertVertex(parent, "F1", "Fonction 1", 0, 0, 60, 40, "column");
+			// manual setting
+			mxCell v11 = (mxCell) graph.insertVertex(root, "F1.1", "Fonction 1.1", 100, 70, 60, 40);
+			mxCell v12 = (mxCell) graph.insertVertex(root, "F1.2", "Fonction 1.2", 100, 220, 80, 30);
+			mxCell v13 = (mxCell) graph.insertVertex(root, "F1.3", "Fonction 1.3", 340, 150, 80, 30);
+	
+			mxCell v11 = (mxCell) graph.insertVertex(root, "F1.1", "Fonction 1.1", 0, 0, 60, 40);
+			mxCell v12 = (mxCell) graph.insertVertex(root, "F1.2", "Fonction 1.2", 0, 0, 80, 30);
+			mxCell v13 = (mxCell) graph.insertVertex(root, "F1.3", "Fonction 1.3", 0, 0, 80, 30);
+
 			
-			Object v11 = graph.insertVertex(root, "F1.1", "Fonction 1.1", 0, 0, 60, 40);
-			Object v12 = graph.insertVertex(root, "F1.2", "Fonction 1.2", 0, 0, 80, 30);
-			Object v13 = graph.insertVertex(root, "F1.3", "Fonction 1.3", 0, 0, 80, 30);
-			
-			graph.insertEdge(parent, null, "", root, v11);
-			graph.insertEdge(parent, null, "", root, v12);
-			
-			graph.insertEdge(parent, null, "", v13, root);
+			graph.insertEdge(parent, null, "Flux 1", root, v11);
+			graph.insertEdge(parent, null, "FLux 2", root, v12);
+			graph.insertEdge(parent, null, "Flux 3", v13, root);
 			
 
-			graph.insertEdge(parent, null, "", v11, v13);
-			graph.insertEdge(parent, null, "", v12, v13);
+			graph.insertEdge(parent, null, "Flux 4", v11, v13);
+			graph.insertEdge(parent, null, "Flux 5", v12, v13);
 			
 			// Installs auto layout for all levels
-			mxHierarchicalLayout layout = new mxHierarchicalLayout(graph, SwingConstants.WEST);
+			FunctionalBehaviorLayout layout = new FunctionalBehaviorLayout(graph);
 			
+			
+			//layout.edgeStyle=4;
+			//layout.intraCellSpacing=20;
+			//layout.interRankCellSpacing=70;
+			
+			layout.execute(graph.getDefaultParent());
+		}
+		finally
+		{
+			// Updates the display
+			graph.getModel().endUpdate();
+		}
+		return graph;
+	}*/	
+	private static mxGraph createBehaviorDummyData() {
+		mxGraph graph = new mxGraph() {
+			
+			// Ports are not used as terminals for edges, they are
+			// only used to compute the graphical connection point
+			public boolean isPort(Object cell)
+			{
+				mxGeometry geo = getCellGeometry(cell);
+				
+				return (geo != null) ? geo.isRelative() : false;
+			}
+			
+			// Implements a tooltip that shows the actual
+			// source and target of an edge
+			public String getToolTipForCell(Object cell)
+			{
+				if (model.isEdge(cell))
+				{
+					return convertValueToString(model.getTerminal(cell, true)) + " -> " +
+						convertValueToString(model.getTerminal(cell, false));
+				}
+				
+				return super.getToolTipForCell(cell);
+			}
+			
+			// Removes the folding icon and disables any folding
+			public boolean isCellFoldable(Object cell, boolean collapse)
+			{
+				return false;
+			}
+		};
+		
+		
+		// Sets the default edge style
+		Map<String, Object> style = graph.getStylesheet().getDefaultEdgeStyle();
+		style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.ElbowConnector);
+
+	
+		style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.OrthConnector);
+		style.put(mxConstants.STYLE_STROKECOLOR, "red");
+		//style.put(mxConstants.STYLE_STROKEWIDTH, 2);
+		
+		graph.setAllowDanglingEdges(false);
+		
+		Object parent = graph.getDefaultParent();
+
+		try
+		{
+			// manual setting
+			mxCell port1 = (mxCell) graph.insertVertex(parent, "P1", "Port In 1", 40, 20, PORT_RADIUS, PORT_RADIUS);
+			
+			mxCell port2 = (mxCell) graph.insertVertex(parent, "P2", "Port In 2", 40, 20, PORT_RADIUS, PORT_RADIUS);
+			
+			mxCell port3 = (mxCell) graph.insertVertex(parent, "P3", "Port Out 3", 40, 20, PORT_RADIUS, PORT_RADIUS);
+
+			// manual setting
+			mxCell v11 = (mxCell) graph.insertVertex(parent, "F1.1", "Fonction 1.1", 100, 70, 60, 40);
+			mxCell v12 = (mxCell) graph.insertVertex(parent, "F1.2", "Fonction 1.2", 100, 220, 80, 30);
+			mxCell v13 = (mxCell) graph.insertVertex(parent, "F1.3", "Fonction 1.3", 340, 150, 80, 30);
+
+			
+			graph.insertEdge(parent, null, "Flux 1", port1, v11);
+			graph.insertEdge(parent, null, "FLux 2", port2, v12);
+			graph.insertEdge(parent, null, "Flux 3", v13, port3);
+			
+
+			graph.insertEdge(parent, null, "Flux 4", v11, v13);
+			graph.insertEdge(parent, null, "Flux 5", v12, v13);
+			
+			// Installs auto layout for all levels
+			FunctionalBehaviorLayout layout = new FunctionalBehaviorLayout(graph);
+			graphicalInterface.currentAppliedLayout = layout;
 			
 			//layout.edgeStyle=4;
 			//layout.intraCellSpacing=20;

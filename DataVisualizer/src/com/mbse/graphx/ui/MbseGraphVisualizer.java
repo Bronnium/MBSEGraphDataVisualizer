@@ -25,6 +25,7 @@ import javax.swing.event.ChangeListener;
 
 import com.mbse.graphx.connectors.RhapsodyConnector;
 import com.mbse.graphx.layout.CallStackLayout;
+import com.mbse.graphx.layout.FunctionalBehaviorLayout;
 import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
@@ -126,6 +127,12 @@ public class MbseGraphVisualizer extends JFrame {
 					pbsLayout.setNodeDistance(spacing);
 					pbsLayout.execute(graph.getDefaultParent());
 				}
+				else if (currentAppliedLayout instanceof FunctionalBehaviorLayout) {
+					FunctionalBehaviorLayout fbdLayout = (FunctionalBehaviorLayout) currentAppliedLayout;
+					fbdLayout.setInterRankCellSpacing(spacing);
+					//fbdLayout.set
+					fbdLayout.execute(graph.getDefaultParent());
+				}
 			}
 		}); 
 
@@ -152,6 +159,12 @@ public class MbseGraphVisualizer extends JFrame {
 					pbsLayout.setLevelDistance(spacing);
 					pbsLayout.execute(graph.getDefaultParent());
 				}
+				else if (currentAppliedLayout instanceof FunctionalBehaviorLayout) {
+					FunctionalBehaviorLayout fbdLayout = (FunctionalBehaviorLayout) currentAppliedLayout;
+					//fbdLayout.setInterHierarchySpacing(spacing); // don't work
+					fbdLayout.setIntraCellSpacing(spacing);
+					fbdLayout.execute(graph.getDefaultParent());
+				}
 			}
 		}); 
 
@@ -175,9 +188,9 @@ public class MbseGraphVisualizer extends JFrame {
 		toolBar.add(checkbox);
 
 		JButton btnSaveDiagram = new JButton("Save diagram");
-		btnSaveDiagram.setText("<html><color=blue><b>Save diagram</b></font></html>");
-		btnSaveDiagram.setBorderPainted(true);
-		btnSaveDiagram.setBorder(BorderFactory.createLineBorder(Color.blue));
+		//btnSaveDiagram.setText("<html><color=black><b>Save diagram</b></font></html>");
+		//btnSaveDiagram.setBorderPainted(true);
+		//btnSaveDiagram.setBorder(BorderFactory.createLineBorder(Color.blue));
 		//btnSaveDiagram.setToolTipText("Save diagram");
 		btnSaveDiagram.addActionListener(this::saveDiagramListener);
 		toolBar.add(btnSaveDiagram);
