@@ -55,7 +55,6 @@ import com.mxgraph.view.mxLayoutManager;
  */
 public class MbseGraphVisualizer extends JFrame {
 
-	private double zoom_scale = 1.0;
 	private mxGraph graph;
 	private JPanel contentPane;
 	private JButton btnZoomIn;
@@ -93,7 +92,7 @@ public class MbseGraphVisualizer extends JFrame {
 	private void initUI() {
 		// Construction et injection de la barre d'outils
 		contentPane = (JPanel) this.getContentPane();
-		//contentPane.add( this.createToolBar(), BorderLayout.NORTH );
+		contentPane.add( this.createToolBar(), BorderLayout.NORTH );
 
 		contentPane.add( this.createSecondBar(), BorderLayout.EAST );
 
@@ -215,87 +214,10 @@ public class MbseGraphVisualizer extends JFrame {
 		btnZoomOut.addActionListener(this::btnZoomListener);
 		toolBar.add(btnZoomOut);
 
-		btnZoomFit = new JButton( new ImageIcon("icons/zoom_fit.png") );
+		btnZoomFit = new JButton(new ImageIcon("icons/zoom_fit.png"));
 		btnZoomFit.setToolTipText("Fit Zoom");
+		btnZoomFit.addActionListener(this::btnZoomListener);
 		toolBar.add(btnZoomFit);
-
-		//final mxGraphView view = graph.getView();
-
-		toolBar.addSeparator(new Dimension(100, 10));
-
-		// mxCircleLayout
-		JButton btnLayoutCircle = new JButton(new ImageIcon("icons/circular.png"));
-		btnLayoutCircle.setToolTipText("Circular Layout");
-		btnLayoutCircle.addActionListener(this::circularLayoutListener);
-		toolBar.add(btnLayoutCircle);
-
-		//mxCompactTreeLayout
-		JButton btnLayoutCompactTree = new JButton(new ImageIcon("icons/circle.png"));
-		btnLayoutCompactTree.setToolTipText("Compact Tree Layout");
-		btnLayoutCompactTree.addActionListener(this::compactTreeLayoutListener);
-		toolBar.add(btnLayoutCompactTree);
-
-		//mxEdgeLabelLayout
-		// TODO: ne fonctionne pas
-		JButton btnLayoutEdgeLabel = new JButton(new ImageIcon("icons/circle.png"));
-		btnLayoutEdgeLabel.setToolTipText("Edge Label Layout");
-		btnLayoutEdgeLabel.addActionListener(this::edgeLabelLayoutListener);
-		toolBar.add(btnLayoutEdgeLabel);
-
-		//mxFastOrganicLayout
-		JButton btnLayoutFastOrganic = new JButton(new ImageIcon("icons/circle.png"));
-		btnLayoutFastOrganic.setToolTipText("Fast Organic Layout");
-		btnLayoutFastOrganic.addActionListener(this::fastOrganicLayoutListener);
-		toolBar.add(btnLayoutFastOrganic);
-
-		//mxOrganicLayout
-		JButton btnLayoutOrganic = new JButton(new ImageIcon("icons/circle.png"));
-		btnLayoutOrganic.setToolTipText("Organic Layout");
-		btnLayoutOrganic.addActionListener(this::organicLayoutListener);
-		toolBar.add(btnLayoutOrganic);
-
-		//mxParralelEdgeLayout
-		// TODO: ne fonctionne pas
-		JButton btnLayoutParralelEdge = new JButton(new ImageIcon("icons/circle.png"));
-		btnLayoutParralelEdge.setToolTipText("Parralel Edge Layout");
-		btnLayoutParralelEdge.addActionListener(this::parralelEdgeLayoutListener);
-		toolBar.add(btnLayoutParralelEdge);
-
-		//mxPartitionLayout
-		// TODO: ne fonctionne pas
-		JButton btnLayoutPartition = new JButton(new ImageIcon("icons/circle.png"));
-		btnLayoutPartition.setToolTipText("Partition Layout");
-		btnLayoutPartition.addActionListener(this::partitionLayoutListener);
-		toolBar.add(btnLayoutPartition);
-
-		//mxStackLayout
-		// TODO: fonctionne mais pas espacé
-		JButton btnLayoutStack = new JButton(new ImageIcon("icons/circle.png"));
-		btnLayoutStack.setToolTipText("Stack Layout");
-		btnLayoutStack.addActionListener(this::stackLayoutListener);
-		toolBar.add(btnLayoutStack);
-
-		//mxHierarchicalLayout
-		JButton btnLayoutHierachical = new JButton( new ImageIcon("icons/structured.png"));
-		btnLayoutHierachical.setToolTipText("Hierarchical Layout");
-		btnLayoutHierachical.addActionListener(this::hierarchicalLayoutListener);
-		toolBar.add(btnLayoutHierachical);
-
-		//mxOrthogonalLayout
-		// TODO: ne fonctionne pas
-		JButton btnLayoutOrthogonal = new JButton(new ImageIcon("icons/org_unit.png"));
-		btnLayoutOrthogonal.setToolTipText("Orthogonal Layout");
-		btnLayoutOrthogonal.addActionListener(this::othogonalLayoutListener);
-		toolBar.add(btnLayoutOrthogonal);
-
-
-
-		// Additional layout to be added...
-
-		toolBar.addSeparator(new Dimension(100, 10));
-
-
-
 
 		return toolBar;
 	}
@@ -304,25 +226,17 @@ public class MbseGraphVisualizer extends JFrame {
 
 		this.graphComponent.setCenterZoom(true);
 		graphComponent.setKeepSelectionVisibleOnZoom(true);
+		graphComponent.setCenterPage(true);
 
 		JButton selectedZoom = (JButton) event.getSource();
 		if (selectedZoom.equals(btnZoomIn)) {
-			zoom_scale+=0.1;
-			//((mxGraphComponent) graph).zoomIn();
 			graphComponent.zoomIn();
-
-			//graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
 		}
 		else if (selectedZoom.equals(btnZoomOut)) {
-			zoom_scale-=0.1;
-
 			graphComponent.zoomOut();
-			//graphComponent.zoomTo(zoom_scale, graphComponent.isCenterZoom());
 		}
 		else if (selectedZoom.equals(btnZoomFit)) {
-			//graphComponent.setZoomPolicy(mxGraphComponent.ZOOM_POLICY_PAGE);
 			graphComponent.zoomActual();
-			zoom_scale = 1;
 		}
 		else {
 			new JOptionPane("Zoom not handled");
@@ -366,58 +280,7 @@ public class MbseGraphVisualizer extends JFrame {
 
 
 	}
-	//compactTreeLayoutListener
-	private void compactTreeLayoutListener( ActionEvent event ) {
-		Object parent = graph.getDefaultParent();
-		final mxCompactTreeLayout layout = new mxCompactTreeLayout(graph);
-		currentAppliedLayout= layout;
-		layout.setHorizontal(true);
-		layout.execute(parent);
-	}
 
-	private void edgeLabelLayoutListener( ActionEvent event ) {
-		Object parent = graph.getDefaultParent();
-		final mxEdgeLabelLayout layout = new mxEdgeLabelLayout(graph); 
-		currentAppliedLayout= layout;
-		layout.execute(parent);
-		graph.repaint();
-	}
-	private void fastOrganicLayoutListener( ActionEvent event ) {
-		Object parent = graph.getDefaultParent();
-		final mxFastOrganicLayout layout = new mxFastOrganicLayout(graph); 
-		currentAppliedLayout= layout;
-		layout.execute(parent);
-		graph.repaint();
-	}
-
-	private void organicLayoutListener( ActionEvent event ) {
-		Object parent = graph.getDefaultParent();
-		final mxOrganicLayout layout = new mxOrganicLayout(graph);
-		currentAppliedLayout= layout;
-		layout.execute(parent);
-		graph.repaint();
-	}
-	private void parralelEdgeLayoutListener( ActionEvent event ) {
-		Object parent = graph.getDefaultParent();
-		final mxParallelEdgeLayout layout = new mxParallelEdgeLayout(graph); 
-		currentAppliedLayout= layout;
-		layout.execute(parent);
-		graph.repaint();
-	}
-	private void partitionLayoutListener( ActionEvent event ) {
-		Object parent = graph.getDefaultParent();
-		final mxPartitionLayout layout = new mxPartitionLayout(graph);
-		currentAppliedLayout= layout;
-		layout.execute(parent);
-		graph.repaint();
-	}
-	private void stackLayoutListener( ActionEvent event ) {
-		Object parent = graph.getDefaultParent();
-		final mxStackLayout layout = new mxStackLayout(graph, false, 10, 10, 10, 10);
-		currentAppliedLayout= layout;
-		layout.execute(parent);
-		graph.repaint();
-	}
 	private void hierarchicalLayoutListener( ActionEvent event ) {
 		Object parent = graph.getDefaultParent();
 

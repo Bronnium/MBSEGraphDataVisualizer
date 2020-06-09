@@ -2,7 +2,9 @@ package com.mbse.graphx.layout;
 
 import javax.swing.SwingConstants;
 
+import com.mxgraph.canvas.mxICanvas;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
 
 public class FunctionalBehaviorLayout extends mxHierarchicalLayout {
@@ -14,6 +16,22 @@ public class FunctionalBehaviorLayout extends mxHierarchicalLayout {
 		setMoveParent(true);
 		setParentBorder(0);
 		setResizeParent(true);
+		//setFineTuning(true);
+		//parentBorder=1;
+		
+		
+	}
+	
+	@Override
+	public void execute(Object parent) {
+		// TODO Auto-generated method stub
+		super.execute(parent);
+		
+		System.out.println(graph.getGraphBounds().getWidth()+","+graph.getGraphBounds().getHeight());
+		
+		//mxCell v11 = (mxCell) graph.insertVertex(null, "F1", "Fonction 1", 0, 0, graph.getGraphBounds().getWidth(), graph.getGraphBounds().getHeight());
+
+		
 	}
 
 }

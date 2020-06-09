@@ -230,10 +230,12 @@ public class MainExecution {
 		
 		// Sets the default edge style
 		Map<String, Object> style = graph.getStylesheet().getDefaultEdgeStyle();
-		style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.ElbowConnector);
+		style.put(mxConstants.STYLE_EDGE, mxConstants.STYLE_ORTHOGONAL);
+		//mxConstants.ALIGN_MIDDLE
+		System.out.println(mxConstants.STYLE_VERTICAL_LABEL_POSITION);
 
 	
-		style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.OrthConnector);
+		//style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.OrthConnector);
 		style.put(mxConstants.STYLE_STROKECOLOR, "red");
 		//style.put(mxConstants.STYLE_STROKEWIDTH, 2);
 		
@@ -244,40 +246,48 @@ public class MainExecution {
 		try
 		{
 			// manual setting
-			mxCell port1 = (mxCell) graph.insertVertex(parent, "P1", "Port In 1", 40, 20, PORT_RADIUS, PORT_RADIUS);
+			mxCell port1 = (mxCell) graph.insertVertex(parent, "P1", "Port In 1", 0, 0, PORT_RADIUS, PORT_RADIUS, "labelPosition=left;align=right;verticalLabelPosition=middle;");
 			
-			mxCell port2 = (mxCell) graph.insertVertex(parent, "P2", "Port In 2", 40, 20, PORT_RADIUS, PORT_RADIUS);
+			mxCell port2 = (mxCell) graph.insertVertex(parent, "P2", "Port In 2", 0, 0, PORT_RADIUS, PORT_RADIUS, "labelPosition=left;align=right");
 			
-			mxCell port3 = (mxCell) graph.insertVertex(parent, "P3", "Port Out 3", 40, 20, PORT_RADIUS, PORT_RADIUS);
+			mxCell port3 = (mxCell) graph.insertVertex(parent, "P3", "Port Out 3", 0, 0, PORT_RADIUS, PORT_RADIUS, "labelPosition=right;align=left");
 
 			// manual setting
-			mxCell v11 = (mxCell) graph.insertVertex(parent, "F1.1", "Fonction 1.1", 100, 70, 60, 40);
-			mxCell v12 = (mxCell) graph.insertVertex(parent, "F1.2", "Fonction 1.2", 100, 220, 80, 30);
-			mxCell v13 = (mxCell) graph.insertVertex(parent, "F1.3", "Fonction 1.3", 340, 150, 80, 30);
+			mxCell v11 = (mxCell) graph.insertVertex(parent, "F1.1", "Fonction 1.1", 0, 0, 80, 30);
+			mxCell v12 = (mxCell) graph.insertVertex(parent, "F1.2", "Fonction 1.2", 0, 0, 80, 30);
+			mxCell v13 = (mxCell) graph.insertVertex(parent, "F1.3", "Fonction 1.3", 0, 0, 80, 30);
 
-			
-			graph.insertEdge(parent, null, "Flux 1", port1, v11);
-			graph.insertEdge(parent, null, "FLux 2", port2, v12);
-			graph.insertEdge(parent, null, "Flux 3", v13, port3);
+			String edgeStyle = mxConstants.STYLE_EDGE+"="+mxConstants.STYLE_ORTHOGONAL;
+			graph.insertEdge(parent, null, "Flux 1", port1, v11, edgeStyle);
+			graph.insertEdge(parent, null, "FLux 2", port2, v12, edgeStyle);
+			graph.insertEdge(parent, null, "Flux 3", v13, port3, edgeStyle);
 			
 
-			graph.insertEdge(parent, null, "Flux 4", v11, v13);
-			graph.insertEdge(parent, null, "Flux 5", v12, v13);
+			graph.insertEdge(parent, null, "Flux 4", v11, v13, edgeStyle);
+			graph.insertEdge(parent, null, "Flux 5", v12, v13, edgeStyle);
 			
 			// Installs auto layout for all levels
 			FunctionalBehaviorLayout layout = new FunctionalBehaviorLayout(graph);
 			graphicalInterface.currentAppliedLayout = layout;
-			
-			//layout.edgeStyle=4;
-			//layout.intraCellSpacing=20;
-			//layout.interRankCellSpacing=70;
-			
+					
 			layout.execute(graph.getDefaultParent());
+			
+	        
+	        graph.addListener(mxEvent.RESIZE_CELLS,  new mxIEventListener() {
+
+	            @Override
+	            public void invoke(Object sender, mxEventObject evt) {
+	                System.out.println("resize cells");
+	            	layout.execute(graph.getDefaultParent());
+	            }
+	        });
+	        
 		}
 		finally
 		{
 			// Updates the display
 			graph.getModel().endUpdate();
+			
 		}
 		return graph;
 	}
@@ -358,6 +368,7 @@ public class MainExecution {
 			final ProductBreakdownStructureLayout layout = new ProductBreakdownStructureLayout(graph);
 			graphicalInterface.currentAppliedLayout = layout;
 			layout.execute(parent);
+			
 			
 	        graph.addListener(mxEvent.FOLD_CELLS,  new mxIEventListener() {
 
