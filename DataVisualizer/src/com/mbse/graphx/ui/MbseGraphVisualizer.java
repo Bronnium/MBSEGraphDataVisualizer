@@ -9,6 +9,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -26,6 +27,7 @@ import javax.swing.event.ChangeListener;
 import com.mbse.graphx.connectors.RhapsodyConnector;
 import com.mbse.graphx.layout.CallStackLayout;
 import com.mbse.graphx.layout.FunctionalBehaviorLayout;
+import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
 import com.mxgraph.layout.mxCircleLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
@@ -43,6 +45,7 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.swing.util.mxMorphing;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
+import com.mxgraph.util.mxPoint;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
 import com.mxgraph.view.mxGraph;
 import com.mxgraph.view.mxGraphView;
@@ -132,6 +135,11 @@ public class MbseGraphVisualizer extends JFrame {
 					//fbdLayout.set
 					fbdLayout.execute(graph.getDefaultParent());
 				}
+				else if (currentAppliedLayout instanceof FunctionalBreakdownStructureLayout) {
+					FunctionalBreakdownStructureLayout fbsLayout = (FunctionalBreakdownStructureLayout) currentAppliedLayout;
+					fbsLayout.setLevelDistance(spacing);
+					fbsLayout.execute(graph.getDefaultParent());
+				}
 			}
 		}); 
 
@@ -164,27 +172,34 @@ public class MbseGraphVisualizer extends JFrame {
 					fbdLayout.setIntraCellSpacing(spacing);
 					fbdLayout.execute(graph.getDefaultParent());
 				}
+				else if (currentAppliedLayout instanceof FunctionalBreakdownStructureLayout) {
+					FunctionalBreakdownStructureLayout fbsLayout = (FunctionalBreakdownStructureLayout) currentAppliedLayout;
+					fbsLayout.setNodeDistance(spacing);
+					fbsLayout.execute(graph.getDefaultParent());
+				}
 			}
 		}); 
 
 		toolBar.add(verticalSpacingSlide);
-
+		
+		if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
 		JCheckBox checkbox = new JCheckBox("Display last children over");
 		checkbox.addItemListener(new ItemListener() {
 
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				JCheckBox cbLog = (JCheckBox) e.getSource();
-				if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
+				
 					ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
 					
 					pbsLayout.setLeafOver(cbLog.isSelected());
 					pbsLayout.execute(graph.getDefaultParent());
 				}
 
-			}
+	
 		});
 		toolBar.add(checkbox);
+		}
 
 		JButton btnSaveDiagram = new JButton("Save diagram");
 		//btnSaveDiagram.setText("<html><color=black><b>Save diagram</b></font></html>");
@@ -352,6 +367,8 @@ public class MbseGraphVisualizer extends JFrame {
 					
 					System.out.println("cell="+graph.getLabel(cell));
 					System.out.println("X:"+cellGeometry.getX()+"Y:"+cellGeometry.getY()+"/"+graph.getEdges(cell).length);
+					List<mxPoint> points = cellGeometry.getPoints();
+					System.out.println("points="+points);
 				}
 			}
 		});

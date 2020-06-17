@@ -60,10 +60,6 @@ public class ProductBreakdownStructureLayout extends mxCompactTreeLayout {
 			{
 				mxICell parentCell = ((mxICell)(vertexes[i]));
 
-				if (!graph.isCellFoldable(parentCell, false)) {
-					System.out.println(parentCell.getValue());
-				}
-				
 				// For each edge of the vertex
 				for(int j=0; j < parentCell.getEdgeCount(); j++)
 				{
@@ -77,9 +73,11 @@ public class ProductBreakdownStructureLayout extends mxCompactTreeLayout {
 			
 					mxRectangle childBounds = getVertexBounds(edge.getTerminal(false));
 
+					double x = 0, y = 0;
+									
 					List<mxPoint> newPoints = new ArrayList<mxPoint>(4);
 
-					double x = 0, y = 0;
+					
 					x = parentBounds.getCenterX();
 					y = parentBounds.getY() + parentBounds.getHeight();
 					newPoints.add(new mxPoint(x, y));
@@ -92,7 +90,8 @@ public class ProductBreakdownStructureLayout extends mxCompactTreeLayout {
 					newPoints.add(new mxPoint(x, y));
 
 					y = childBounds.getY();
-
+					newPoints.add(new mxPoint(x, y));
+					
 					setEdgePoints(edge, newPoints);
 				}
 

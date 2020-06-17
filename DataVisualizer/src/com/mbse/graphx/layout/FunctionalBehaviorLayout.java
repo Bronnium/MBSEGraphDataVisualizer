@@ -11,12 +11,14 @@ public class FunctionalBehaviorLayout extends mxHierarchicalLayout {
 
 	public FunctionalBehaviorLayout(mxGraph graph) {
 		super(graph, SwingConstants.WEST);
-		
+		//super(graph);
 		//setMoveTree(true); //tree is moved to TOP LEFT when updating view
 		setMoveParent(true);
 		setParentBorder(0);
 		setResizeParent(true);
-		//setFineTuning(true);
+		setFineTuning(true);
+		traverseAncestors = true;
+		//this.graph
 		//parentBorder=1;
 		
 		
@@ -31,7 +33,8 @@ public class FunctionalBehaviorLayout extends mxHierarchicalLayout {
 		
 		//mxCell v11 = (mxCell) graph.insertVertex(null, "F1", "Fonction 1", 0, 0, graph.getGraphBounds().getWidth(), graph.getGraphBounds().getHeight());
 
-		
+		graph.getView();
+		//g.drawRect(20, 20, 100, 100);
 	}
 
 }

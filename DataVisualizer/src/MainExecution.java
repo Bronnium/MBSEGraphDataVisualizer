@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.text.Utilities;
 
 import com.mbse.graphx.FoldableTree;
 import com.mbse.graphx.Port;
@@ -245,32 +246,53 @@ public class MainExecution {
 
 		try
 		{
+			mxCell root = (mxCell) graph.insertVertex(parent, "F1", "Fonction 1", 10, 10, 400, 300);
 			// manual setting
-			mxCell port1 = (mxCell) graph.insertVertex(parent, "P1", "Port In 1", 0, 0, PORT_RADIUS, PORT_RADIUS, "labelPosition=left;align=right;verticalLabelPosition=middle;");
+			Port port1 = new Port("Test", Port.IN);
 			
-			mxCell port2 = (mxCell) graph.insertVertex(parent, "P2", "Port In 2", 0, 0, PORT_RADIUS, PORT_RADIUS, "labelPosition=left;align=right");
+			Port port2 = new Port("test2", Port.IN);
 			
-			mxCell port3 = (mxCell) graph.insertVertex(parent, "P3", "Port Out 3", 0, 0, PORT_RADIUS, PORT_RADIUS, "labelPosition=right;align=left");
-
+			Port port3 = new Port("test3", Port.OUT);
+			
+			Port port4 = new Port("test4", Port.OUT);
+			
+			ArrayList<Port> listOfInputPorts = new ArrayList<Port>();
+			
+			listOfInputPorts.add(port1);
+			listOfInputPorts.add(port2);
+			Utilies.positionPort(listOfInputPorts);
+			graph.addCells(listOfInputPorts.toArray(), root);
+			
+			ArrayList<Port> listOfOutputPorts = new ArrayList<Port>();
+			listOfOutputPorts.add(port3);
+			listOfOutputPorts.add(port4);
+			Utilies.positionPort(listOfOutputPorts);
+			graph.addCells(listOfOutputPorts.toArray(), root);
+			
+			
 			// manual setting
 			mxCell v11 = (mxCell) graph.insertVertex(parent, "F1.1", "Fonction 1.1", 0, 0, 80, 30);
 			mxCell v12 = (mxCell) graph.insertVertex(parent, "F1.2", "Fonction 1.2", 0, 0, 80, 30);
 			mxCell v13 = (mxCell) graph.insertVertex(parent, "F1.3", "Fonction 1.3", 0, 0, 80, 30);
+			mxCell v14 = (mxCell) graph.insertVertex(parent, "F1.4", "Fonction 1.4", 0, 0, 80, 30);
 
 			String edgeStyle = mxConstants.STYLE_EDGE+"="+mxConstants.STYLE_ORTHOGONAL;
 			graph.insertEdge(parent, null, "Flux 1", port1, v11, edgeStyle);
 			graph.insertEdge(parent, null, "FLux 2", port2, v12, edgeStyle);
 			graph.insertEdge(parent, null, "Flux 3", v13, port3, edgeStyle);
 			
+			graph.insertEdge(parent, null, "Flux 7", port1, v14, edgeStyle);
+			graph.insertEdge(parent, null, "Flux 8", v14, port4, edgeStyle);
+			
 
 			graph.insertEdge(parent, null, "Flux 4", v11, v13, edgeStyle);
 			graph.insertEdge(parent, null, "Flux 5", v12, v13, edgeStyle);
 			
 			// Installs auto layout for all levels
-			FunctionalBehaviorLayout layout = new FunctionalBehaviorLayout(graph);
-			graphicalInterface.currentAppliedLayout = layout;
+			//FunctionalBehaviorLayout layout = new FunctionalBehaviorLayout(graph);
+			//graphicalInterface.currentAppliedLayout = layout;
 					
-			layout.execute(graph.getDefaultParent());
+			//layout.execute(graph.getDefaultParent());
 			
 	        
 	        graph.addListener(mxEvent.RESIZE_CELLS,  new mxIEventListener() {
@@ -278,7 +300,7 @@ public class MainExecution {
 	            @Override
 	            public void invoke(Object sender, mxEventObject evt) {
 	                System.out.println("resize cells");
-	            	layout.execute(graph.getDefaultParent());
+	            	//layout.execute(graph.getDefaultParent());
 	            }
 	        });
 	        
