@@ -1,4 +1,4 @@
-package com.mbse.graphx.connectors;
+package com.mbse.graphx.rhapsody;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.font.*;

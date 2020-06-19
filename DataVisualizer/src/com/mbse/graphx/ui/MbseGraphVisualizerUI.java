@@ -18,6 +18,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.mbse.graphx.MbseGraphController;
+import com.mbse.graphx.MbseModel;
+import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.view.mxGraph;
 
 /**
  * Main class for MBSE Graph Visualization
@@ -32,12 +35,14 @@ public class MbseGraphVisualizerUI extends JFrame {
 	private JButton btnZoomOut;
 	private JButton btnZoomFit;
 	private JSlider horizontalSpacingSlide, verticalSpacingSlide;
+	
+	protected mxGraphComponent graphComponent;
 
 	// controller
 	private MbseGraphController mbseGraphController;
 
 
-	public MbseGraphVisualizerUI(MbseGraphController controller) {
+	public MbseGraphVisualizerUI(MbseModel dataModel, MbseGraphController controller) {
 		super("MBSE Graph Visualizer");
 		// sets size
 		this.setSize(800, 600);
@@ -47,13 +52,14 @@ public class MbseGraphVisualizerUI extends JFrame {
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		this.mbseGraphController = controller;
+		this.graphComponent = new mxGraphComponent(dataModel);
 
 		initUI();
-
+		
 		this.setVisible(true);
 	}
 
-	public MbseGraphVisualizerUI(MbseGraphController controller, String title) {
+	public MbseGraphVisualizerUI(MbseModel dataModel, MbseGraphController controller, String title) {
 
 		super(title);
 		// sets size
@@ -64,6 +70,7 @@ public class MbseGraphVisualizerUI extends JFrame {
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		this.mbseGraphController = controller;
+		
 
 		this.setContentPane(this);
 
@@ -79,6 +86,10 @@ public class MbseGraphVisualizerUI extends JFrame {
 		contentPane.add(createMainToolBar(), BorderLayout.NORTH);
 		contentPane.add(createSecondaryToolBar(), BorderLayout.EAST);
 
+		contentPane.add(graphComponent);
+
+		
+
 	}
 
 	class MbseToolListener implements ActionListener{
@@ -91,7 +102,6 @@ public class MbseGraphVisualizerUI extends JFrame {
 	class MbseChangeListener implements ChangeListener{
 		@Override
 		public void stateChanged(ChangeEvent event) {
-			System.out.println("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
 			mbseGraphController.setOperateur(event);
 		}           
 	}
@@ -149,8 +159,12 @@ public class MbseGraphVisualizerUI extends JFrame {
 		return toolBar;
 	}
 
-	public void updateView() {
-		// TODO Auto-generated method stub
+	public void updateView(mxGraph graphData) {
+		
+		
+		//graphComponent = new mxGraphComponent(graphData);
+		graphComponent.setGraph(graphData);
+		//graphComponent.repaint();
 		
 	}
 

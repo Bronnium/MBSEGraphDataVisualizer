@@ -1,13 +1,12 @@
 package com.mbse.graphx;
 
-import javax.swing.JFrame;
-
 import com.mbse.graphx.ui.MbseGraphVisualizerUI;
 import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.view.mxGraph;
 
-public class MbseModel extends mxGraphModel {
+public class MbseModel extends mxGraph {
 
-	private MbseGraphVisualizerUI dataView;
+	protected MbseGraphVisualizerUI dataView;
 	
 	
 	public void addView(MbseGraphVisualizerUI data)
@@ -17,7 +16,7 @@ public class MbseModel extends mxGraphModel {
 	
 	public void notifyView()
 	{
-		dataView.updateView();
+		dataView.updateView(this);
 	}
 	
 }

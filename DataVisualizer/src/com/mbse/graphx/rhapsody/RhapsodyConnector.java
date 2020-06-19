@@ -1,4 +1,4 @@
-package com.mbse.graphx.connectors;
+package com.mbse.graphx.rhapsody;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import javax.swing.JOptionPane;
 
 import com.mbse.graphx.FoldableTree;
+import com.mbse.graphx.MbseGraphVisualizerApplication;
 import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizerUI;
@@ -49,11 +50,6 @@ import com.telelogic.rhapsody.core.RPUserPlugin;
 public class RhapsodyConnector extends RPUserPlugin {
 
 	protected IRPApplication m_rhpApplication = null;
-	protected MbseGraphVisualizerUI graphicalInterface;
-	private IRPDiagram diagram;
-	private LinkedHashMap<String, IRPGraphElement> map;
-	private int rhapsodyYoffset = 10;
-	private int rhapsodyXoffset = 10;
 
 	// called when the plug-in is loaded
 	public void RhpPluginInit(final IRPApplication rpyApplication) {
@@ -91,21 +87,12 @@ public class RhapsodyConnector extends RPUserPlugin {
 
 	// called when the plug-in pop-up menu (if applicable) is selected
 	public void OnMenuItemSelect(String menuItem) {
-		//show the selected element name
-		String selElemName = new String();
-		IRPModelElement element = m_rhpApplication.getSelectedElement();
-		if(element != null){
-			selElemName = element.getName();			
-		} else {
-			selElemName = "No selected element";
-		}
-		String msg = "Hello world from SimplePlugin.OnMenuItemSelect " + menuItem + "\n Selected element name is: " + selElemName + "\n"; 
-		//JOptionPane.showMessageDialog(null,	msg		 );
-		m_rhpApplication.writeToOutputWindow("Simple Plugin" , msg);
 
+		IRPModelElement element = m_rhpApplication.getSelectedElement();
+		
 		switch (menuItem) {
 		case "Rearrange diagram":
-			prepareGraphData(element);
+			prepareGraphModelData(menuItem, element);
 			break;
 
 		default:
@@ -113,151 +100,22 @@ public class RhapsodyConnector extends RPUserPlugin {
 		}
 	}
 
-	private void prepareGraphData(IRPModelElement element) {
-		graphicalInterface = new MbseGraphVisualizerUI("FBS Preview");
-
+	private void prepareGraphModelData(String menuItem, IRPModelElement element) {
+		
 		if (element instanceof IRPDiagram) {
-			diagram = (IRPDiagram) element;
+			IRPDiagram diagram = (IRPDiagram) element;
 			
-			RhapsodyGraphModel rhapsodyGraphModel = new RhapsodyGraphModel();
-		}
-		
-		
-		
-		
-		
-
-
-		// création du graph depuis le modèle avec SnecmaML
-		graphicalInterface.setGraphData(graph);
-
-		// les différents layouts sont testés dans le preview
-		// on recupere le resultat du graph de donnée
-		synchronized (graphicalInterface) {
-			try {
-				graphicalInterface.wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			RhapsodyMbseModel rhapsodyMbseModel = new RhapsodyMbseModel();
+			
+			MbseGraphVisualizerApplication application = new MbseGraphVisualizerApplication(rhapsodyMbseModel);
+			
+			application.update();
+			
+			
 		}
 
-		System.out.println("test");
-
-		// récupération des position des objects
-		getObjectPositions();
 	}
 
-
-	@SuppressWarnings("unchecked")
-	private void sortIRPCollection(List list) {
-
-		Collections.sort(list, new Comparator<IRPGraphElement>() {
-
-			@Override
-			public int compare(IRPGraphElement o1, IRPGraphElement o2) {
-				if (o1 instanceof IRPGraphEdge && o2 instanceof IRPGraphNode) {
-					return 1;
-				}
-				else if (o1 instanceof IRPGraphNode && o2 instanceof IRPGraphEdge) {
-					return -1;
-				}
-				else
-					return 0;
-
-			}
-		});	
-	}
-
-	/**
-	 * To be defined.
-	 * @return Probably Map<GUID, (X.int,Y.int)>
-	 */
-	public void getObjectPositions() {
-		
-		mxGraph graph = graphicalInterface.getGraphModel();
-
-		mxGraphModel graphModel = (mxGraphModel) graph.getModel();	
-		
-		for (Entry<String, IRPGraphElement> entry : map.entrySet())
-		{
-			System.out.println("GUID = " + entry.getKey() + ", IRPGraph = " + entry.getValue());
-			String GUID = entry.getKey();
-			
-			mxCell cell = (mxCell) graphModel.getCell(GUID);
-			
-			if (cell == null)
-			{
-				System.out.println("not found for: "+GUID);
-				continue;
-			}
-			
-			if (cell.isVisible()) 
-			{
-				if(cell.getGeometry()==null)
-					continue;
-				
-				if (cell.isVertex())
-				{
-					IRPGraphNode node = (IRPGraphNode) entry.getValue();
-					System.out.println("vertex: "+cell.getGeometry());
-					node.setGraphicalProperty("Position", (int) cell.getGeometry().getX()+","+ (int) cell.getGeometry().getY());
-					System.out.println("vertex position: "+(int) cell.getGeometry().getX()+","+ (int) cell.getGeometry().getY());
-				}
-				else
-				{
-
-					
-					System.out.println("Visible: "+cell.isVisible() +" vertex: "+cell.isVertex());
-					List<mxPoint> points = cell.getGeometry().getPoints();
-					System.out.println(points.toString());
-					
-					IRPGraphEdge edge = (IRPGraphEdge) entry.getValue();
-					System.out.println(" ---> "+ edge.getTarget().getGraphicalProperty("Position").getValue());
-					
-					IRPGraphElement Source = edge.getSource();
-					
-					List<mxPoint> newPoints = new ArrayList<mxPoint>(4);
-
-					/*
-					x = (int) (parentBounds.getX() + parentBounds.getWidth());
-					y = (int) parentBounds.getCenterY();
-					
-					newPoints.add(new mxPoint(x, y));
-
-					int centerXOffset = (int) ((childBounds.getX()-x)/2);
-					x = (int) (x + centerXOffset);
-					newPoints.add(new mxPoint(x, y));
-
-					y = (int) childBounds.getCenterY();
-					newPoints.add(new mxPoint(x, y));
-
-					x = (int) childBounds.getX();
-					newPoints.add(new mxPoint(x, y));
-					
-					edgesProperty = convertToPointsToString(newPoints);
-					System.out.println("---> Polygon property: "+edgesProperty);*/
-
-				}
-			}
-		}
-
-		return;
-	}
-
-	private String convertToPointsToString(List<mxPoint> points) {
-		String stringPoints = "";
-		//number of points
-		stringPoints+=points.size();
-		
-		//loop over points
-		for (mxPoint point : points) 
-		{
-			stringPoints+=","+(int) point.getX()+","+(int) point.getY();
-		}
-		
-		return stringPoints;
-	}
 
 	// called when the plug-in popup trigger (if applicable) fired
 	public void OnTrigger(String trigger) {
