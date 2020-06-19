@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +19,7 @@ import javax.swing.JOptionPane;
 import com.mbse.graphx.FoldableTree;
 import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
-import com.mbse.graphx.ui.MbseGraphVisualizer;
+import com.mbse.graphx.ui.MbseGraphVisualizerUI;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.util.mxConstants;
@@ -48,9 +49,11 @@ import com.telelogic.rhapsody.core.RPUserPlugin;
 public class RhapsodyConnector extends RPUserPlugin {
 
 	protected IRPApplication m_rhpApplication = null;
-	protected MbseGraphVisualizer graphicalInterface;
+	protected MbseGraphVisualizerUI graphicalInterface;
 	private IRPDiagram diagram;
-	private HashMap<String, IRPGraphElement> map;
+	private LinkedHashMap<String, IRPGraphElement> map;
+	private int rhapsodyYoffset = 10;
+	private int rhapsodyXoffset = 10;
 
 	// called when the plug-in is loaded
 	public void RhpPluginInit(final IRPApplication rpyApplication) {
@@ -102,8 +105,7 @@ public class RhapsodyConnector extends RPUserPlugin {
 
 		switch (menuItem) {
 		case "Rearrange diagram":
-			//
-			generateGraphData(element);
+			prepareGraphData(element);
 			break;
 
 		default:
@@ -111,102 +113,19 @@ public class RhapsodyConnector extends RPUserPlugin {
 		}
 	}
 
-	private void generateGraphData(IRPModelElement element) {
-		graphicalInterface = new MbseGraphVisualizer("FBS Preview");
+	private void prepareGraphData(IRPModelElement element) {
+		graphicalInterface = new MbseGraphVisualizerUI("FBS Preview");
 
-		FoldableTree graph = new FoldableTree();
-		Object parent = graph.getDefaultParent();
-
-		Map<String, Object> style = graph.getStylesheet().getDefaultEdgeStyle();
-		//style.put(mxConstants.STYLE_EDGE, mxEdgeStyle.SideToSide);
-		
-		graph.getModel().beginUpdate();
-		try {
-
-			if (element instanceof IRPDiagram) {
-				diagram = (IRPDiagram) element;
-
-				List elements = diagram.getGraphicalElements().toList();
-				sortIRPCollection(elements);
-
-				//HashMap hm = new HashMap();
-				map = new HashMap<String, IRPGraphElement>();
-
-
-				// the list needs to be sorted !
-				// nodes first then edges
-				for (Object obj : elements) 
-				{
-
-					String guid = ((IRPGraphElement) obj).getGraphicalProperty("GUID").getValue();
-					map.put(guid, (IRPGraphElement) obj);
-
-					if (obj instanceof IRPGraphNode) {
-						IRPGraphNode node = (IRPGraphNode) obj;
-
-						if (node.getModelObject() instanceof IRPOperation) {
-							String displayName = node.getModelObject().getDisplayName();
-							String size = node.getGraphicalProperty("TextFontSize").getValue();
-
-							int widthInPixels = Integer.valueOf(node.getGraphicalProperty("Width").getValue());
-							int heightInPixels = Integer.valueOf(node.getGraphicalProperty("Height").getValue());
-							//rhapsodyModel.addVertex(function);
-
-							System.out.println(displayName+" added vertex:" +guid);
-							graph.insertVertex(parent, guid, displayName, 0, 0, widthInPixels, heightInPixels);
-						}
-
-
-					}
-					else if (obj instanceof IRPGraphEdge) {
-
-
-						IRPGraphEdge edge = (IRPGraphEdge) obj;
-						if (edge.getModelObject() instanceof IRPDependency) {
-							//String guid = edge.getGraphicalProperty("GUID").getValue();
-
-							String sourceGUID = edge.getSource().getGraphicalProperty("GUID").getValue();
-							String targetGUID = edge.getTarget().getGraphicalProperty("GUID").getValue();
-							System.out.println(sourceGUID +" ---> "+ targetGUID);
-
-							//rhapsodyModel.addEdge(dependency);
-
-							Object source = ((mxGraphModel)(graph.getModel())).getCell(sourceGUID);
-							Object target = ((mxGraphModel)(graph.getModel())).getCell(targetGUID);
-							System.out.println(source +" ---> "+ target);
-							if (source != null && target != null)
-							{
-								graph.insertEdge(parent, guid, null, source, target);
-							}
-							else
-							{
-								System.out.println("error adding edge");
-							}
-
-						}
-
-					}
-				}
-
-			}
-
-			final FunctionalBreakdownStructureLayout layout = new FunctionalBreakdownStructureLayout(graph);
-			graphicalInterface.currentAppliedLayout = layout;
-			layout.execute(parent);
-
-
-			graph.addListener(mxEvent.FOLD_CELLS,  new mxIEventListener() {
-
-				@Override
-				public void invoke(Object sender, mxEventObject evt) {
-					System.out.println("folding repositioning");
-					layout.execute(graph.getDefaultParent());
-				}
-			});
-		} finally {
-
-			graph.getModel().endUpdate();
+		if (element instanceof IRPDiagram) {
+			diagram = (IRPDiagram) element;
+			
+			RhapsodyGraphModel rhapsodyGraphModel = new RhapsodyGraphModel();
 		}
+		
+		
+		
+		
+		
 
 
 		// création du graph depuis le modèle avec SnecmaML
@@ -255,23 +174,32 @@ public class RhapsodyConnector extends RPUserPlugin {
 	 * @return Probably Map<GUID, (X.int,Y.int)>
 	 */
 	public void getObjectPositions() {
+		
 		mxGraph graph = graphicalInterface.getGraphModel();
 
-		mxGraphModel graphModel = (mxGraphModel) graph.getModel();		
-
-		for (Entry<String, Object> pair : graphModel.getCells().entrySet()) {
-			//
-			mxCell cell = (mxCell) pair.getValue();
-			String searchGUID = pair.getKey();
+		mxGraphModel graphModel = (mxGraphModel) graph.getModel();	
+		
+		for (Entry<String, IRPGraphElement> entry : map.entrySet())
+		{
+			System.out.println("GUID = " + entry.getKey() + ", IRPGraph = " + entry.getValue());
+			String GUID = entry.getKey();
+			
+			mxCell cell = (mxCell) graphModel.getCell(GUID);
+			
+			if (cell == null)
+			{
+				System.out.println("not found for: "+GUID);
+				continue;
+			}
 			
 			if (cell.isVisible()) 
 			{
-				System.out.println(pair.getKey() +" / "+ pair.getValue());
 				if(cell.getGeometry()==null)
 					continue;
+				
 				if (cell.isVertex())
 				{
-					IRPGraphNode node = (IRPGraphNode) map.get(searchGUID);
+					IRPGraphNode node = (IRPGraphNode) entry.getValue();
 					System.out.println("vertex: "+cell.getGeometry());
 					node.setGraphicalProperty("Position", (int) cell.getGeometry().getX()+","+ (int) cell.getGeometry().getY());
 					System.out.println("vertex position: "+(int) cell.getGeometry().getX()+","+ (int) cell.getGeometry().getY());
@@ -279,45 +207,41 @@ public class RhapsodyConnector extends RPUserPlugin {
 				else
 				{
 
+					
 					System.out.println("Visible: "+cell.isVisible() +" vertex: "+cell.isVertex());
 					List<mxPoint> points = cell.getGeometry().getPoints();
 					System.out.println(points.toString());
 					
-					IRPGraphEdge edge = (IRPGraphEdge) map.get(searchGUID);
+					IRPGraphEdge edge = (IRPGraphEdge) entry.getValue();
+					System.out.println(" ---> "+ edge.getTarget().getGraphicalProperty("Position").getValue());
 					
-					String edgesProperty = convertToPointsToString(points);
-	                //edge.setGraphicalProperty("Polygon", edgesProperty);
-					System.out.println("---> Polygon property: "+edgesProperty);
+					IRPGraphElement Source = edge.getSource();
 					
-
-					mxRectangle parentBounds = cell.getTerminal(true).getGeometry();
-			
-					mxRectangle childBounds = cell.getTerminal(false).getGeometry();
-
-					double x = 0, y = 0;
-									
 					List<mxPoint> newPoints = new ArrayList<mxPoint>(4);
 
-					x = parentBounds.getX() + parentBounds.getWidth();
-					y = parentBounds.getCenterY();
+					/*
+					x = (int) (parentBounds.getX() + parentBounds.getWidth());
+					y = (int) parentBounds.getCenterY();
+					
 					newPoints.add(new mxPoint(x, y));
 
-					double centerXOffset = (childBounds.getX()-x)/2;
-					x = x + centerXOffset;
+					int centerXOffset = (int) ((childBounds.getX()-x)/2);
+					x = (int) (x + centerXOffset);
 					newPoints.add(new mxPoint(x, y));
 
-					y = childBounds.getCenterY();
+					y = (int) childBounds.getCenterY();
 					newPoints.add(new mxPoint(x, y));
 
-					x = childBounds.getX();
+					x = (int) childBounds.getX();
 					newPoints.add(new mxPoint(x, y));
 					
 					edgesProperty = convertToPointsToString(newPoints);
-					System.out.println("---> Polygon property: "+edgesProperty);
+					System.out.println("---> Polygon property: "+edgesProperty);*/
 
 				}
 			}
 		}
+
 		return;
 	}
 

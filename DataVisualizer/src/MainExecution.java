@@ -16,7 +16,7 @@ import com.mbse.graphx.layout.CallStackLayout;
 import com.mbse.graphx.layout.FunctionalBehaviorLayout;
 import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
-import com.mbse.graphx.ui.MbseGraphVisualizer;
+import com.mbse.graphx.ui.MbseGraphVisualizerUI;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxStackLayout;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
@@ -35,7 +35,7 @@ import com.mxgraph.view.mxGraph;
 
 public class MainExecution {
 
-	private static MbseGraphVisualizer graphicalInterface;
+	private static MbseGraphVisualizerUI graphicalInterface;
 
 	/*
 	 * Utilisation souhaitée dans le plugin Rhapsody
@@ -53,7 +53,7 @@ public class MainExecution {
 		
 		// déclaration du Visualiseur
 		//graphicalInterface = new MbseGraphVisualizer("Product Breakdown Structure Preview");
-		graphicalInterface = new MbseGraphVisualizer("Functional Behavior Preview");
+		graphicalInterface = new MbseGraphVisualizerUI("Functional Behavior Preview");
 
 		// création du graph depuis le modèle avec SnecmaML
 		graphicalInterface.setGraphData(createBehaviorDummyData());

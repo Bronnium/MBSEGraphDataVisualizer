@@ -1,9 +1,11 @@
 package com.mbse.graphx.layout;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mxgraph.layout.mxCompactTreeLayout;
+import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
 import com.mxgraph.util.mxEvent;
