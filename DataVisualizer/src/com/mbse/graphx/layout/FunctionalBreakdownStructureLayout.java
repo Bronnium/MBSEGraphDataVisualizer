@@ -22,7 +22,7 @@ import com.mxgraph.view.mxGraph;
  * 
  * Note that, a system contains other systems (and can be recursive).
  */
-public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout {
+public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout implements MbseLayout {
 
 	/**
 	 * Display Leafs over default is false.
@@ -43,6 +43,7 @@ public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout {
 
 		minEdgeJetty=0;
 	}
+
 
 	public void setLeafOver(boolean selected) {
 		leafOver = selected;
@@ -99,6 +100,18 @@ public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout {
 
 			}
 		}  
+
+	}
+
+
+	public void setHorizontalSpacing(int spacing) {
+		this.setLevelDistance(spacing);
+		
+	}
+	
+	
+	public void setVerticalSpacing(int spacing) {
+		this.setNodeDistance(spacing);
 
 	}
 

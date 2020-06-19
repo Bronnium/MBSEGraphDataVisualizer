@@ -62,9 +62,8 @@ public class MbseGraphVisualizerApplication {
 	public void update() {
 		System.out.println("test");
 		dataView.repaint();
-		dataView.setVisible(true);
-		
-		
+
+		dataView.setVisible(true);	
 	}
 
 }

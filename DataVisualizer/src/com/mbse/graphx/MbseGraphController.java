@@ -2,8 +2,11 @@ package com.mbse.graphx;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
+import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
+import com.mbse.graphx.layout.MbseLayout;
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.model.mxGraphModel;
 
@@ -15,37 +18,42 @@ public class MbseGraphController {
 	public MbseGraphController(MbseModel dataModel) {
 		// TODO Auto-generated constructor stub
 		this.model = dataModel;
-	}
-
-	public void setOperateur(ChangeEvent event) {
-		System.out.println(event.getSource());
-		//label.setText("Valeur actuelle : " + ((JSlider)event.getSource()).getValue());
-		/*
-		if (horizontalSpacingSlide.getValueIsAdjusting()) {
-            return;
-        }
-		spacing = ((JSlider)event.getSource()).getValue();
-		if (currentAppliedLayout instanceof ProductBreakdownStructureLayout) {
-			ProductBreakdownStructureLayout pbsLayout = (ProductBreakdownStructureLayout) currentAppliedLayout;
-			pbsLayout.setNodeDistance(spacing);
-			pbsLayout.execute(graph.getDefaultParent());
-		}
-		else if (currentAppliedLayout instanceof FunctionalBehaviorLayout) {
-			FunctionalBehaviorLayout fbdLayout = (FunctionalBehaviorLayout) currentAppliedLayout;
-			fbdLayout.setInterRankCellSpacing(spacing);
-			//fbdLayout.set
-			fbdLayout.execute(graph.getDefaultParent());
-		}
-		else if (currentAppliedLayout instanceof FunctionalBreakdownStructureLayout) {
-			FunctionalBreakdownStructureLayout fbsLayout = (FunctionalBreakdownStructureLayout) currentAppliedLayout;
-			fbsLayout.setLevelDistance(spacing);
-			fbsLayout.execute(graph.getDefaultParent());
-		}
-		*/
+		
+		currentAppliedLayout = new FunctionalBreakdownStructureLayout(dataModel);
+		
+		model.setAppliedLayout(currentAppliedLayout);
+		model.executeLayout();
 		
 	}
 
-	public void setOperateur(ActionEvent e) {
+	/**
+	 * Spacing is handled with JSlider (vertical and horizontal)
+	 * @param event
+	 */
+	public void setSpacing(ChangeEvent event) {
+		JSlider slider = (JSlider) event.getSource();
+		
+		// spacing value is applied only when slider is released
+		if (slider.getValueIsAdjusting())
+			return;
+		
+		int spacing = slider.getValue();
+		
+		if (slider.getName().equals("HorizontalSpacing")) 
+		{
+			((FunctionalBreakdownStructureLayout) currentAppliedLayout).setHorizontalSpacing(spacing);
+
+		}
+		else // verticalSpacing
+		{
+			((FunctionalBreakdownStructureLayout) currentAppliedLayout).setVerticalSpacing(spacing);
+		}
+
+		model.executeLayout();
+		
+	}
+
+	public void setOperateur(ActionEvent event) {
 		// TODO Auto-generated method stub
 		
 	}

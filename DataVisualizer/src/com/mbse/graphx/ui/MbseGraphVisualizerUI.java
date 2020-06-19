@@ -88,8 +88,6 @@ public class MbseGraphVisualizerUI extends JFrame {
 
 		contentPane.add(graphComponent);
 
-		
-
 	}
 
 	class MbseToolListener implements ActionListener{
@@ -102,7 +100,7 @@ public class MbseGraphVisualizerUI extends JFrame {
 	class MbseChangeListener implements ChangeListener{
 		@Override
 		public void stateChanged(ChangeEvent event) {
-			mbseGraphController.setOperateur(event);
+			mbseGraphController.setSpacing(event);
 		}           
 	}
 
@@ -118,13 +116,23 @@ public class MbseGraphVisualizerUI extends JFrame {
 
 		toolBar.add(new JLabel("Set horizontal spacing"));
 
-		horizontalSpacingSlide = new JSlider(JSlider.HORIZONTAL);
+		horizontalSpacingSlide = new JSlider(JSlider.HORIZONTAL,5,100,20);
+		horizontalSpacingSlide.setPaintTicks(true);
+		horizontalSpacingSlide.setPaintLabels(true);
+		horizontalSpacingSlide.setMinorTickSpacing(10);
+		horizontalSpacingSlide.setMajorTickSpacing(20);
+		horizontalSpacingSlide.setName("HorizontalSpacing");
 		horizontalSpacingSlide.addChangeListener(changeListener);
 		toolBar.add(horizontalSpacingSlide);
 
 		toolBar.add(new JLabel("Set vertical spacing"));
 
-		verticalSpacingSlide = new JSlider(JSlider.HORIZONTAL);
+		verticalSpacingSlide = new JSlider(JSlider.HORIZONTAL,5,100,20);
+		verticalSpacingSlide.setPaintTicks(true);
+		verticalSpacingSlide.setPaintLabels(true);
+		verticalSpacingSlide.setMinorTickSpacing(10);
+		verticalSpacingSlide.setMajorTickSpacing(20);
+		verticalSpacingSlide.setName("VerticalSpacing");
 		verticalSpacingSlide.addChangeListener(changeListener);
 		toolBar.add(verticalSpacingSlide);
 
@@ -160,12 +168,7 @@ public class MbseGraphVisualizerUI extends JFrame {
 	}
 
 	public void updateView(mxGraph graphData) {
-		
-		
-		//graphComponent = new mxGraphComponent(graphData);
 		graphComponent.setGraph(graphData);
-		//graphComponent.repaint();
-		
 	}
 
 }

@@ -105,7 +105,7 @@ public class RhapsodyConnector extends RPUserPlugin {
 		if (element instanceof IRPDiagram) {
 			IRPDiagram diagram = (IRPDiagram) element;
 			
-			RhapsodyMbseModel rhapsodyMbseModel = new RhapsodyMbseModel();
+			RhapsodyMbseModel rhapsodyMbseModel = new RhapsodyMbseModel(diagram);
 			
 			MbseGraphVisualizerApplication application = new MbseGraphVisualizerApplication(rhapsodyMbseModel);
 			
