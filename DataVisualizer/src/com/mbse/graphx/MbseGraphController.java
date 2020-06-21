@@ -2,13 +2,13 @@ package com.mbse.graphx;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
 import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.layout.MbseLayout;
 import com.mxgraph.layout.mxGraphLayout;
-import com.mxgraph.model.mxGraphModel;
 
 public class MbseGraphController {
 
@@ -19,7 +19,7 @@ public class MbseGraphController {
 		// TODO Auto-generated constructor stub
 		this.model = dataModel;
 		
-		currentAppliedLayout = new FunctionalBreakdownStructureLayout(dataModel);
+		currentAppliedLayout = model.appliedLayout;
 		
 		model.setAppliedLayout(currentAppliedLayout);
 		model.executeLayout();
@@ -41,21 +41,27 @@ public class MbseGraphController {
 		
 		if (slider.getName().equals("HorizontalSpacing")) 
 		{
-			((FunctionalBreakdownStructureLayout) currentAppliedLayout).setHorizontalSpacing(spacing);
+			((MbseLayout) currentAppliedLayout).setHorizontalSpacing(spacing);
 
 		}
 		else // verticalSpacing
 		{
-			((FunctionalBreakdownStructureLayout) currentAppliedLayout).setVerticalSpacing(spacing);
+			((MbseLayout) currentAppliedLayout).setVerticalSpacing(spacing);
 		}
 
 		model.executeLayout();
 		
 	}
 
-	public void setOperateur(ActionEvent event) {
-		// TODO Auto-generated method stub
+	public synchronized void setOperateur(ActionEvent event) {
+		JButton button = (JButton) event.getSource();
+
+		notify();
+		notifyAll();
+		
+		System.out.println("test");
 		
 	}
+
 
 }

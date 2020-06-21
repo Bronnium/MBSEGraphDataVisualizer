@@ -152,15 +152,15 @@ public class MbseGraphVisualizerUI extends JFrame {
 		// empeche la barre d'etre bougée
 		toolBar.setFloatable(false);
 
-		btnZoomIn = new JButton(new ImageIcon("icons/zoom_in.png"));
+		btnZoomIn = new JButton("ZoomIn", new ImageIcon("icons/zoom_in.png"));
 		btnZoomIn.addActionListener(actionListener);
 		toolBar.add(btnZoomIn);
 
-		btnZoomOut = new JButton(new ImageIcon("icons/zoom_out.png"));
+		btnZoomOut = new JButton("ZoomOut", new ImageIcon("icons/zoom_out.png"));
 		btnZoomOut.addActionListener(actionListener);
 		toolBar.add(btnZoomOut);
 
-		btnZoomFit = new JButton(new ImageIcon("icons/zoom_fit.png"));
+		btnZoomFit = new JButton("ZoomFit", new ImageIcon("icons/zoom_fit.png"));
 		btnZoomFit.addActionListener(actionListener);
 		toolBar.add(btnZoomFit);
 

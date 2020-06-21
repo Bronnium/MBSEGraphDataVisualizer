@@ -3,7 +3,7 @@ package com.mbse.graphx;
 
 import javax.swing.JFrame;
 
-import com.mbse.graphx.rhapsody.RhapsodyMbseModel;
+import com.mbse.graphx.connectors.RhapsodyMbseModel;
 import com.mbse.graphx.ui.MbseGraphVisualizerUI;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.view.mxGraph;
@@ -16,7 +16,7 @@ import com.mxgraph.view.mxGraph;
 public class MbseGraphVisualizerApplication {
 	
 	// controller
-	private MbseGraphController dataController;
+	public MbseGraphController dataController;
 	// view
 	private MbseGraphVisualizerUI dataView;
 	// model
@@ -52,18 +52,13 @@ public class MbseGraphVisualizerApplication {
 		dataModel.addView(dataView);
 		
 	}
-	
 
-	public static void main(String[] args) {
-				
-		new MbseGraphVisualizerApplication(new CustomMbseModel());
-	}
-
-	public void update() {
-		System.out.println("test");
-		dataView.repaint();
-
-		dataView.setVisible(true);	
+	public void close() {
+		dataView.dispose();
+		dataController = null;
+		dataModel = null;
+		dataView = null;
+		
 	}
 
 }

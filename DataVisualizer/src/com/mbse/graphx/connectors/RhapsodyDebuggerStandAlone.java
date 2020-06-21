@@ -1,4 +1,4 @@
-package com.mbse.graphx.rhapsody;
+package com.mbse.graphx.connectors;
 
 import com.telelogic.rhapsody.core.IRPApplication;
 import com.telelogic.rhapsody.core.IRPCollection;
