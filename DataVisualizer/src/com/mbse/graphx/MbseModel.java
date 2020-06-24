@@ -6,6 +6,7 @@ import java.util.List;
 import com.mbse.graphx.layout.MbseLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizerUI;
 import com.mxgraph.layout.mxGraphLayout;
+import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.view.mxGraph;
@@ -33,6 +34,12 @@ public class MbseModel extends mxGraph {
         return result;
     }
     
+    @Override
+    public boolean isPort(Object cell) {
+    	mxGeometry geo = getCellGeometry(cell);
+		
+		return (geo != null) ? geo.isRelative() : false;
+    }
     /**
      * Need to define how to fold cells for our DAG. In this case we want to traverse the tree collecting
      * all child vertices and then hide/show them and their edges as needed. 
