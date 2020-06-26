@@ -60,6 +60,8 @@ public class RhapsodyMbseModel extends MbseModel {
 
 	
 	private HashMap<String, GraphCallOperation> map = new HashMap<String, GraphCallOperation>();
+	
+	protected mxCell frame = null;
 
 	public RhapsodyMbseModel(String str) 
 	{
@@ -94,15 +96,16 @@ public class RhapsodyMbseModel extends MbseModel {
 			this.getModel().endUpdate();
 		}
 
-		mxCell frame = null;
-		this.appliedLayout = new FunctionalBehaviorLayout(this, frame );
+		this.appliedLayout = new FunctionalBehaviorLayout(this);
 
 	}
 
 	public RhapsodyMbseModel(IRPDiagram diagram, String str) {
 
-		mxCell frame = null;
+		this.setAllowDanglingEdges(false);
+		
 		Object parent = this.getDefaultParent();
+		System.out.println("herrre:"+parent);
 
 		this.getModel().beginUpdate();
 
@@ -110,11 +113,13 @@ public class RhapsodyMbseModel extends MbseModel {
 		{
 			List<IRPGraphElement> elements = diagram.getGraphicalElements().toList();
 
+			Object rootElement = parent;
+			
 			System.out.println(diagram.getName()+" - Diagrams elements: "+elements.size());
 			// nodes first then edges
 			for (IRPGraphElement graphElement : elements) 
 			{
-				Object rootElement = parent;
+				
 				String graphicalGUID = graphElement.getGraphicalProperty("GUID").getValue();
 
 				//IRPGraphNode node = (IRPGraphNode) graphElement;
@@ -135,10 +140,12 @@ public class RhapsodyMbseModel extends MbseModel {
 
 				switch (graphElement.getGraphicalProperty("Type").getValue()) {
 				case "ActionPin":
-					addActionPinToGraph((IRPGraphNode) graphElement);						
+					//addActionPinToGraph((IRPGraphNode) graphElement);						
 					break;
 				case "ActivityParameter":
 					addActivityParameterToGraph((IRPGraphNode) graphElement);	
+					//Object activityParameter = this.insertVertex(parent, graphicalGUID, displayText, 50, 50, 50, 30);
+					//map.put(graphicalGUID, new GraphCallOperation((mxCell) rootElement));
 
 					break;
 				case "CallOperation":
@@ -158,19 +165,18 @@ public class RhapsodyMbseModel extends MbseModel {
 					}
 					break;
 
-				case "DiagramFrame":
-					//String displayText = graphElement.getGraphicalProperty("Text").getValue();
+				case "DiagramFrame":			
 					rootElement = this.insertVertex(parent, graphicalGUID, displayText, 50, 50, 400, 500);
-					map.put(graphicalGUID, new GraphCallOperation((mxCell) rootElement));
-					frame = (mxCell) rootElement;
 					//this.setDefaultParent(rootElement);
+					map.put(graphicalGUID, new GraphCallOperation((mxCell) rootElement));
+					
 					break;
 
 				default:
 					if(graphElement instanceof IRPGraphEdge)
 					{
 						IRPGraphEdge edge = (IRPGraphEdge)graphElement;
-						addObjectFlowToGraph(edge);
+						addObjectFlowToGraph(edge, rootElement);
 					}
 					break;
 				};
@@ -184,19 +190,36 @@ public class RhapsodyMbseModel extends MbseModel {
 		}
 
 		
-		this.appliedLayout = new FunctionalBehaviorLayout(this, frame);
+		this.appliedLayout = new FunctionalBehaviorLayout(this);
 	}
 
-	private void addObjectFlowToGraph(IRPGraphEdge edge) {
+	private void addObjectFlowToGraph(IRPGraphEdge edge, Object parent) {
 		String GUID = edge.getGraphicalProperty("GUID").getValue();
+		
+		String Text = edge.getSource().getGraphicalProperty("Text").getValue();
 
+		String source = edge.getSource().getGraphicalProperty("Type").getValue();
+		String target = edge.getTarget().getGraphicalProperty("Type").getValue();
+		
 		String sourceGUID = edge.getSource().getGraphicalProperty("GUID").getValue();
 		String targetGUID = edge.getTarget().getGraphicalProperty("GUID").getValue();
+		
+		if (source.equals("ActionPin"))
+		{
+			sourceGUID = edge.getSource().getGraphicalParent().getGraphicalProperty("GUID").getValue();
+			
+		}
+		
+		if (target.equals("ActionPin"))
+		{
+			targetGUID = edge.getTarget().getGraphicalParent().getGraphicalProperty("GUID").getValue();
+		}
+		
 
 		Object graphSource = findObject(sourceGUID);
 		Object graphTarget = findObject(targetGUID);
 
-		this.insertEdge(this.getDefaultParent(), GUID, null, graphSource, graphTarget);
+		this.insertEdge(parent, GUID, Text, graphSource, graphTarget);
 
 	}
 
@@ -372,28 +395,9 @@ public class RhapsodyMbseModel extends MbseModel {
 		}
 	}
 
-	/**
-	 * Adds a vertex
-	 * @param rhapsodyElement
-	 * @return
-	 */
-	public Object addVertex(IRPModelElement rhapsodyElement) {
-		return this.insertVertex(null, rhapsodyElement.getGUID(), rhapsodyElement.getDisplayName(), 0, 0, 60, 40);
-	}
 
 	protected Object findObject(String GUID) {
 		return ((mxGraphModel)(this.getModel())).getCell(GUID);
-	}
-
-	/**
-	 * Adds an edge which is directed from Source to Target
-	 * @param edgeElement
-	 * @return
-	 */
-	public Object addEdge(IRPDependency edgeElement) {
-		Object source = findObject(edgeElement.getDependent().getGUID());
-		Object target = findObject(edgeElement.getDependsOn().getGUID());
-		return this.insertEdge(null, null, edgeElement.getGUID(), source, target);
 	}
 
 
