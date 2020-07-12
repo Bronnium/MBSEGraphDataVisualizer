@@ -65,30 +65,62 @@ public class RhapsodyMbseModel extends MbseModel {
 
 	public RhapsodyMbseModel(String str) 
 	{
-		Object parent = this.getDefaultParent();
-		System.out.println("value parent:"+parent);
+		Object root = this.getDefaultParent();
+		System.out.println("value parent:"+root);
 
 		this.getModel().beginUpdate();
 
 		try
 		{
-			mxICell containerNode=(mxICell)this.insertVertex(parent, null, "Electrical Energy", 10, 10, 100, 100, "");
-			mxICell sampleNode=(mxICell)this.insertVertex(parent, null, "Pump Command", 200, 10, 100, 100, "");
-			mxICell inNode=(mxICell)this.insertVertex(parent, null, "Purified Oil", 200, 10, 100, 100, "");		
+			mxICell frame=(mxICell)this.insertVertex(root, null, "TEST", 10, 10, 100, 100, "");
+			
+			
+			mxICell extractParameter=(mxICell)this.insertVertex(frame, null, "Extract", 10, 10, 100, 100, "");
+			extractParameter.getGeometry().setRelative(true);
+			
+			mxICell prm15=(mxICell)this.insertVertex(frame, null, "Prm 15", 200, 10, 100, 100, "");
+			prm15.getGeometry().setRelative(true);
+			
+			mxICell adapterPrm=(mxICell)this.insertVertex(frame, null, "Adapted Power", 200, 10, 100, 100, "");
+			adapterPrm.getGeometry().setRelative(true);
+			
+			mxICell prm16=(mxICell)this.insertVertex(frame, null, "Prm 16", 200, 10, 100, 100, "");
+			prm16.getGeometry().setRelative(true);
+			
+			/*
+			mxGeometry geo1 = new mxGeometry(direction, 0.5, textSize,40);
+			// Because the origin is at upper left corner, need to translate to
+			// position the center of port correctly
+			geo1.setOffset(new mxPoint(-textSize/2, -20));
+			geo1.setRelative(true);
 
-			mxICell outNode=(mxICell)this.insertVertex(parent, null, "Supply Oil Flow", 200, 10, 100, 100, "");
+			//mxCell port1 = new mxCell(Text, geo1,"");
+			port1.setGeometry(geo1);
+			port1.setId(GUID);
+			port1.setVertex(true);
+*/
+			
+			this.addCell(extractParameter, frame);
+			
+			this.addCell(prm15, frame);
+			
+			this.addCell(adapterPrm, frame);
+			
+			this.addCell(prm16, frame);
+			
+			
 
-			mxICell f1=(mxICell)this.insertVertex(parent, null, "To transform electrical power in oil flow for RGB gearteeth lubrication", 200, 10, 100, 100, "");
-			mxICell f2=(mxICell)this.insertVertex(parent, null, "To prevent oil overpressure in auxiliary oil circuit", 200, 10, 100, 100, "");
-			mxICell f3=(mxICell)this.insertVertex(parent, null, "To lubricate and evacuate heat rejections", 200, 10, 100, 100, "");
 
-			this.insertEdge(parent, null, null, containerNode, f1);
-			this.insertEdge(parent, null, null, sampleNode, f1);
-			this.insertEdge(parent, null, null, inNode, f1);
-			this.insertEdge(parent, null, null, f1, f2);
-			this.insertEdge(parent, null, null, f2, outNode);
-			this.insertEdge(parent, null, null, f3, outNode);
-			this.insertEdge(parent, null, null, inNode, f3);
+			mxICell f1=(mxICell)this.insertVertex(frame, null, "To adapt speed", 200, 10, 100, 100, "");
+			mxICell f2=(mxICell)this.insertVertex(frame, null, "To evacuate heat rejections", 200, 10, 100, 100, "");
+			mxICell f3=(mxICell)this.insertVertex(frame, null, "To monitor oil pressure", 200, 10, 100, 100, "");
+
+			this.insertEdge(frame, null, null, extractParameter, f1);
+			this.insertEdge(frame, null, null, prm15, f2);
+			this.insertEdge(frame, null, null, f2, f3);	
+			this.insertEdge(frame, null, null, f1, adapterPrm);
+			this.insertEdge(frame, null, null, f1, f3);
+			this.insertEdge(frame, null, null, f3, prm16);
 
 		}
 		finally
@@ -96,7 +128,7 @@ public class RhapsodyMbseModel extends MbseModel {
 			this.getModel().endUpdate();
 		}
 
-		this.appliedLayout = new FunctionalBehaviorLayout(this);
+		this.appliedLayout = new FunctionalBehaviorLayout(this, frame);
 
 	}
 
@@ -135,7 +167,6 @@ public class RhapsodyMbseModel extends MbseModel {
 
 				}
 
-				IRPGraphElement graphicalParent;
 				String displayText = graphElement.getGraphicalProperty("Text").getValue();
 
 				switch (graphElement.getGraphicalProperty("Type").getValue()) {
@@ -167,7 +198,7 @@ public class RhapsodyMbseModel extends MbseModel {
 
 				case "DiagramFrame":			
 					rootElement = this.insertVertex(parent, graphicalGUID, displayText, 50, 50, 400, 500);
-					//this.setDefaultParent(rootElement);
+					frame =  (mxCell) rootElement;
 					map.put(graphicalGUID, new GraphCallOperation((mxCell) rootElement));
 					
 					break;
@@ -190,7 +221,7 @@ public class RhapsodyMbseModel extends MbseModel {
 		}
 
 		
-		this.appliedLayout = new FunctionalBehaviorLayout(this);
+		this.appliedLayout = new FunctionalBehaviorLayout(this, frame);
 	}
 
 	private void addObjectFlowToGraph(IRPGraphEdge edge, Object parent) {

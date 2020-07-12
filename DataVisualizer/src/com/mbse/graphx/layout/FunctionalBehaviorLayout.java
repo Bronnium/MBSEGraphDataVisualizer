@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.swing.SwingConstants;
@@ -14,6 +15,7 @@ import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.layout.hierarchical.model.mxGraphHierarchyModel;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
+import com.mxgraph.model.mxICell;
 import com.mxgraph.model.mxIGraphModel;
 import com.mxgraph.view.mxGraph;
 
@@ -21,13 +23,15 @@ public class FunctionalBehaviorLayout extends mxHierarchicalLayout implements Mb
 
 	private mxCell frameCell;
 
-	public FunctionalBehaviorLayout(mxGraph graph) {
+	public FunctionalBehaviorLayout(mxGraph graph, mxCell rootElement) {
 		super(graph, SwingConstants.WEST);
 		//setMoveTree(true); //tree is moved to TOP LEFT when updating view
 		setMoveParent(true);
 		setResizeParent(true);
 		setFineTuning(false);
 		traverseAncestors = true;	
+
+		frameCell = rootElement;
 
 	}
 
@@ -49,6 +53,8 @@ public class FunctionalBehaviorLayout extends mxHierarchicalLayout implements Mb
 	 */
 	public void execute(Object parent)
 	{
+
+		System.out.println("TETETES"+frameCell);
 
 		mxIGraphModel model = graph.getModel();
 
@@ -74,10 +80,43 @@ public class FunctionalBehaviorLayout extends mxHierarchicalLayout implements Mb
 	@Override
 	public void run(Object parent) {
 		System.out.println("parent: frame"+parent);
+		
+		List<Set<Object>> hierarchyVertices = new ArrayList<Set<Object>>();
+		Set<Object> allVertexSet = new LinkedHashSet<Object>();
+		
+		Set<Object> filledVertexSet = filterDescendants(parent);
 
 		List<Object> candidateRoots = findInputs(parent);
 
 		System.out.println(candidateRoots);
+		
+		for (Object root : candidateRoots)
+		{
+			Set<Object> vertexSet = new LinkedHashSet<Object>();
+			hierarchyVertices.add(vertexSet);
+
+			traverse(root, true, null, allVertexSet, vertexSet,
+					hierarchyVertices, filledVertexSet);
+		}
+		
+		
+		// Perform a layout for each separate hierarchy
+		// Track initial coordinate x-positioning
+		double initialX = 0;
+		Iterator<Set<Object>> iter = hierarchyVertices.iterator();
+
+		while (iter.hasNext())
+		{
+			Set<Object> vertexSet = iter.next();
+
+			this.model = new mxGraphHierarchyModel(this, vertexSet.toArray(),
+					roots, parent);
+
+			//cycleStage(parent);
+			layeringStage();
+			crossingStage(parent);
+			//initialX = placementStage(initialX, parent);
+		}
 
 	}
 
@@ -86,23 +125,21 @@ public class FunctionalBehaviorLayout extends mxHierarchicalLayout implements Mb
 
 		mxIGraphModel model = graph.getModel();
 
-		int childCount = model.getChildCount(parent);
-
-		for (int i = 0; i < childCount; i++)
-		{
-			Object child = model.getChildAt(parent, i);
-
-			if (graph.isPort(child))
+		Set<Entry<String, Object>> entrySet = ((mxGraphModel) model).getCells().entrySet();
+		// for-each loop
+		for(Entry<String, Object> entry1 : entrySet) {
+			
+			mxCell childCell = (mxCell) entry1.getValue();
+			
+			if (graph.isPort(childCell) && childCell.isVertex())
 			{
-				System.out.println("X:"+graph.getCellGeometry(child).getX());
-
-				if (graph.getCellGeometry(child).getX() == 0)
+				if (graph.getCellGeometry(childCell).getX() == 0)
 				{
-					inputs.add(child);
+					inputs.add(childCell);
 				}
 			}
+			
 		}
-
 
 		return inputs;
 	}
