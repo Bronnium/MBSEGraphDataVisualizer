@@ -1,7 +1,5 @@
 package com.mbse.graphx;
 
-import javax.swing.SwingConstants;
-
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxPoint;

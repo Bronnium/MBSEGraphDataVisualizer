@@ -6,7 +6,6 @@ import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
-import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
 import com.mbse.graphx.layout.MbseLayout;
 import com.mxgraph.layout.mxGraphLayout;
 

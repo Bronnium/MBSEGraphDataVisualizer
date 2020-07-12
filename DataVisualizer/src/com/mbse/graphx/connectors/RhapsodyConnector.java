@@ -1,50 +1,17 @@
 package com.mbse.graphx.connectors;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.swing.JOptionPane;
-
-import com.mbse.graphx.FoldableTree;
 import com.mbse.graphx.MbseGraphVisualizerApplication;
-import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
-import com.mbse.graphx.layout.ProductBreakdownStructureLayout;
-import com.mbse.graphx.ui.MbseGraphVisualizerUI;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
-import com.mxgraph.util.mxConstants;
-import com.mxgraph.util.mxEvent;
-import com.mxgraph.util.mxEventObject;
-import com.mxgraph.util.mxEventSource.mxIEventListener;
-import com.mxgraph.util.mxPoint;
-import com.mxgraph.util.mxRectangle;
-import com.mxgraph.view.mxEdgeStyle;
-import com.mxgraph.view.mxGraph;
 import com.telelogic.rhapsody.core.IRPApplication;
-import com.telelogic.rhapsody.core.IRPClass;
 import com.telelogic.rhapsody.core.IRPCollection;
-import com.telelogic.rhapsody.core.IRPDependency;
 import com.telelogic.rhapsody.core.IRPDiagram;
-import com.telelogic.rhapsody.core.IRPGraphEdge;
 import com.telelogic.rhapsody.core.IRPGraphElement;
-import com.telelogic.rhapsody.core.IRPGraphNode;
-import com.telelogic.rhapsody.core.IRPGraphicalProperty;
 import com.telelogic.rhapsody.core.IRPModelElement;
-import com.telelogic.rhapsody.core.IRPNode;
-import com.telelogic.rhapsody.core.IRPOperation;
 import com.telelogic.rhapsody.core.IRPProject;
-import com.telelogic.rhapsody.core.RPOperation;
 import com.telelogic.rhapsody.core.RPUserPlugin;
 
 public class RhapsodyConnector extends RPUserPlugin {

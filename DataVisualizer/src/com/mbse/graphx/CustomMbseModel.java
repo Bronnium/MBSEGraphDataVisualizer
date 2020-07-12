@@ -3,8 +3,6 @@ package com.mbse.graphx;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxICell;
-import com.mxgraph.swing.mxGraphComponent;
-import com.mxgraph.view.mxGraph;
 
 public class CustomMbseModel extends MbseModel {
 

@@ -1,11 +1,6 @@
 package com.mbse.graphx.connectors;
 
 import com.telelogic.rhapsody.core.IRPApplication;
-import com.telelogic.rhapsody.core.IRPCollection;
-import com.telelogic.rhapsody.core.IRPGraphEdge;
-import com.telelogic.rhapsody.core.IRPGraphElement;
-import com.telelogic.rhapsody.core.IRPGraphNode;
-import com.telelogic.rhapsody.core.IRPGraphicalProperty;
 import com.telelogic.rhapsody.core.RhapsodyAppServer;
 
 public class RhapsodyDebuggerStandAlone {

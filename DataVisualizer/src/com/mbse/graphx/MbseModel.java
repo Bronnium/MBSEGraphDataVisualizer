@@ -3,14 +3,12 @@ package com.mbse.graphx;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mbse.graphx.layout.MbseLayout;
 import com.mbse.graphx.ui.MbseGraphVisualizerUI;
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.view.mxGraph;
-import com.mxgraph.view.mxGraph.mxICellVisitor;
 
 public class MbseModel extends mxGraph {
 

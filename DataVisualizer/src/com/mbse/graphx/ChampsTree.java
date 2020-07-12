@@ -1,9 +1,6 @@
 package com.mbse.graphx;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.JFrame;
 
 import com.mxgraph.layout.mxCompactTreeLayout;
@@ -11,7 +8,6 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.util.mxEvent;
 import com.mxgraph.util.mxEventObject;
 import com.mxgraph.util.mxEventSource.mxIEventListener;
-import com.mxgraph.view.mxGraph;
 
 
 public class ChampsTree extends JFrame
