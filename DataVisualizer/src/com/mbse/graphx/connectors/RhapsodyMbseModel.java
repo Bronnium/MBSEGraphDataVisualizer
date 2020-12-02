@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.mbse.graphx.GraphCallOperation;
-import com.mbse.graphx.MbseModel;
 import com.mbse.graphx.layout.FunctionalBehaviorLayout;
+import com.mbse.model.MbseModel;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.model.mxICell;
@@ -32,7 +32,7 @@ public class RhapsodyMbseModel extends MbseModel {
 	
 	protected mxCell frame = null;
 
-	public RhapsodyMbseModel(String str) 
+	public RhapsodyMbseModel() 
 	{
 		Object root = this.getDefaultParent();
 		System.out.println("value parent:"+root);

@@ -1,5 +1,6 @@
 package com.mbse.graphx;
 
+import com.mbse.model.MbseModel;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGeometry;
 import com.mxgraph.model.mxICell;

@@ -2,6 +2,9 @@ package com.mbse.graphx;
 
 
 import com.mbse.graphx.ui.MbseGraphVisualizerUI;
+import com.mbse.model.MbseGraphModel;
+import com.mbse.model.MbseModel;
+import com.mbse.model.StandardMbseGraphModel;
 
 /**
  * Use MVC pattern
@@ -15,7 +18,7 @@ public class MbseGraphVisualizerApplication {
 	// view
 	private MbseGraphVisualizerUI dataView;
 	// model
-	private MbseModel dataModel;
+	private MbseGraphModel dataModel;
 	
 	
 	public MbseGraphVisualizerApplication() {
@@ -33,9 +36,9 @@ public class MbseGraphVisualizerApplication {
 		
 	}
 	
-	public MbseGraphVisualizerApplication(MbseModel someDataModel) {
+	public MbseGraphVisualizerApplication(StandardMbseGraphModel standardMbseModel) {
 		// Instantiate model
-		dataModel = someDataModel;
+		dataModel = standardMbseModel;
 		
 		// create controller
 		dataController = new MbseGraphController(dataModel);
