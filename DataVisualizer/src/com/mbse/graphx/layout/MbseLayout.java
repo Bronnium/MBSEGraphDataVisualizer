@@ -7,4 +7,6 @@ public interface MbseLayout {
 	
 	public void setVerticalSpacing(int spacing);
 	
+	public void execute(Object defaultParent);
+	
 }

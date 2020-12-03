@@ -9,10 +9,12 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
@@ -37,6 +39,14 @@ import com.mxgraph.view.mxGraph;
  */
 public class MbseGraphView extends JFrame {
 
+	public JComboBox getLayoutSelection() {
+		return layoutSelection;
+	}
+
+	public void setLayoutSelection(JComboBox layoutSelection) {
+		this.layoutSelection = layoutSelection;
+	}
+
 	private JPanel contentPane;
 
 	private JButton btnZoomIn;
@@ -48,6 +58,16 @@ public class MbseGraphView extends JFrame {
 	protected mxGraphComponent graphComponent;
 
 	private JPopupMenu popupmenu;
+
+	private JComboBox layoutSelection;
+
+	private JMenuItem cut;
+
+	private JMenuItem copy;
+
+	private JMenuItem paste;
+
+	private JMenuItem displayAsLeaf;
 
 	public MbseGraphView() {
 		super("MBSE Graph Visualizer");
@@ -75,17 +95,32 @@ public class MbseGraphView extends JFrame {
 
 	private Component createPopupMenu() {
 		popupmenu = new JPopupMenu("Edit");
-        JMenuItem cut = new JMenuItem("Cut");  
-        JMenuItem copy = new JMenuItem("Copy");  
-        JMenuItem paste = new JMenuItem("Paste");  
-        popupmenu.add(cut); popupmenu.add(copy); popupmenu.add(paste);
+        
+		displayAsLeaf = new JMenuItem("display as leafs");
+        copy = new JMenuItem("Copy");  
+        paste = new JMenuItem("Paste");  
+        popupmenu.add(displayAsLeaf);
+        popupmenu.add(copy);
+        popupmenu.add(paste);
         return popupmenu;
 	}
+	
+	public void mnuUndoListener( ActionEvent event ) {
+        JOptionPane.showMessageDialog( this, "Undo!" );
+    }
+	
 	private Component createSecondaryToolBar() {
 		JToolBar toolBar = new JToolBar("Layout Properties",JToolBar.VERTICAL);
 
 		// empeche la barre d'etre boug�e
 		toolBar.setFloatable(false);
+		
+		//
+		toolBar.add(new JLabel("Select layout"));
+		layoutSelection = new JComboBox<Object>();
+		
+		//layoutSelection
+		toolBar.add(layoutSelection);
 
 		toolBar.add(new JLabel("Set horizontal spacing"));
 
@@ -163,13 +198,29 @@ public class MbseGraphView extends JFrame {
 				{
 					System.out.println("click");//showGraphPopupMenu(e);
 					 
-					popupmenu.show(rootPane, e.getX(), e.getY());
+					popupmenu.show(graphComponent, e.getX(), e.getY());
+					//graphComponent.getGraph().getSelectionCell()
+					System.out.println("Selected cell:"+graphComponent.getGraph().getSelectionCell());
 				}
+				else
+					System.out.println("when ?");
 			}
 		});
 
 		
 		contentPane.add(graphComponent);
+	}
+
+	public void addInputControl(ActionListener actionListener, ChangeListener changeListener) {
+		btnZoomIn.addActionListener(actionListener);
+		
+		layoutSelection.addActionListener(actionListener);
+		
+		// right click menu
+		displayAsLeaf.addActionListener(actionListener);
+		
+		horizontalSpacingSlide.addChangeListener(changeListener);
+		verticalSpacingSlide.addChangeListener(changeListener);
 	}
 	
 	

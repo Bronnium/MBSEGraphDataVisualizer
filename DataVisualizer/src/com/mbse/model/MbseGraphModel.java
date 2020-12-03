@@ -3,6 +3,10 @@ package com.mbse.model;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import com.mbse.graphx.layout.CallStackLayout;
+import com.mbse.graphx.layout.DefaultMbseLayout;
+import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
+import com.mbse.graphx.layout.MbseLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.model.mxGraphModel;
@@ -10,12 +14,12 @@ import com.mxgraph.view.mxGraph;
 
 public class MbseGraphModel extends mxGraph {
 
-	protected mxGraphLayout appliedLayout;
+	protected MbseLayout appliedLayout;
 
 	/*
 	 * Probably the constructor to use
 	 */
-	public MbseGraphModel(LinkedList vertexList, LinkedList edgeList, mxGraphLayout layout) {
+	public MbseGraphModel(LinkedList vertexList, LinkedList edgeList, MbseLayout layout) {
 		this(vertexList, edgeList);
 		
 		appliedLayout = layout;
@@ -25,7 +29,8 @@ public class MbseGraphModel extends mxGraph {
 	public MbseGraphModel(LinkedList<D2Element> vertexList, LinkedList<D2Line> edgeList) {
 		super();
 		
-		appliedLayout = new mxCompactTreeLayout(this, false);
+		appliedLayout = new DefaultMbseLayout(this);
+		//appliedLayout = new CallStackLayout(this);
 		/*
 		//this.insertVertex(root, null, "TEST", 10, 10, 100, 100, "");
 		for (D2Element element : vertexList) {
@@ -78,11 +83,12 @@ public class MbseGraphModel extends mxGraph {
 		return ((mxGraphModel)(getModel())).getCell(GUID);
 	}
 
-	public mxGraphLayout getAppliedLayout() {
+	public MbseLayout getAppliedLayout() {
 		return appliedLayout;
 	}
 
-	public void setAppliedLayout(mxGraphLayout appliedLayout) {
+	public void setAppliedLayout(MbseLayout appliedLayout) {
 		this.appliedLayout = appliedLayout;
 	}
+
 }
