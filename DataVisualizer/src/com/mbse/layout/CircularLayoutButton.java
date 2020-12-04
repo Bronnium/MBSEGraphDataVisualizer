@@ -1,4 +1,4 @@
-package com.mbse.graphx.layout;
+package com.mbse.layout;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

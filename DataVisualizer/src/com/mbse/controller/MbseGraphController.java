@@ -8,8 +8,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.mbse.graphx.layout.MbseLayout;
-import com.mbse.graphx.layout.RateauLayout;
+import com.mbse.layout.MbseLayout;
+import com.mbse.layout.RateauLayout;
 import com.mbse.model.MbseGraphModel;
 import com.mbse.view.MbseGraphView;
 

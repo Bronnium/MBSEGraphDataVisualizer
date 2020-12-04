@@ -1,4 +1,4 @@
-package com.mbse.graphx.layout;
+package com.mbse.layout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.mxgraph.view.mxGraph;
  * 
  * Note that, a system contains other systems (and can be recursive).
  */
-public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout implements MbseLayout {
+public class ProductBreakdownStructureLayout extends mxCompactTreeLayout {
 
 	/**
 	 * Display Leafs over default is false.
@@ -27,8 +27,8 @@ public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout impl
 	 * 
 	 * @param graph - the graphdata that will be displayed
 	 */
-	public FunctionalBreakdownStructureLayout(mxGraph graph) {
-		super(graph, true);
+	public ProductBreakdownStructureLayout(mxGraph graph) {
+		super(graph, false);
 
 		setMoveTree(true); //tree is moved to TOP LEFT when updating view
 
@@ -38,7 +38,6 @@ public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout impl
 
 		minEdgeJetty=0;
 	}
-
 
 	public void setLeafOver(boolean selected) {
 		leafOver = selected;
@@ -51,7 +50,7 @@ public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout impl
 		super.execute(parent);
 
 		// Modify the edges to ensure they exit the source cell at the midpoint
-		if(horizontal)
+		if(!horizontal)
 		{
 			// get all the vertexes
 			Object[] vertexes = ((mxGraphModel)graph.getModel()).getChildVertices(graph.getModel(), graph.getDefaultParent());
@@ -76,37 +75,26 @@ public class FunctionalBreakdownStructureLayout extends mxCompactTreeLayout impl
 									
 					List<mxPoint> newPoints = new ArrayList<mxPoint>(4);
 
-					x = parentBounds.getX() + parentBounds.getWidth();
-					y = parentBounds.getCenterY();
+					
+					x = parentBounds.getCenterX();
+					y = parentBounds.getY() + parentBounds.getHeight();
 					newPoints.add(new mxPoint(x, y));
 
-					double centerXOffset = (childBounds.getX()-x)/2;
-					x = x + centerXOffset;
+					double centerYOffset = (childBounds.getY()-y)/2;
+					y = y + centerYOffset;
 					newPoints.add(new mxPoint(x, y));
 
-					y = childBounds.getCenterY();
+					x = childBounds.getCenterX();
 					newPoints.add(new mxPoint(x, y));
 
-					x = childBounds.getX();
+					y = childBounds.getY();
 					newPoints.add(new mxPoint(x, y));
-
+					
 					setEdgePoints(edge, newPoints);
 				}
 
 			}
 		}  
-
-	}
-
-
-	public void setHorizontalSpacing(int spacing) {
-		this.setLevelDistance(spacing);
-		
-	}
-	
-	
-	public void setVerticalSpacing(int spacing) {
-		this.setNodeDistance(spacing);
 
 	}
 

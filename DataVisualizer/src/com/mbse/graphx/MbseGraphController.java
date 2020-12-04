@@ -6,7 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 
-import com.mbse.graphx.layout.MbseLayout;
+import com.mbse.layout.MbseLayout;
 import com.mbse.model.MbseModel;
 import com.mxgraph.layout.mxGraphLayout;
 

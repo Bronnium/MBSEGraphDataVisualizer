@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.mbse.graphx.GraphCallOperation;
-import com.mbse.graphx.layout.FunctionalBehaviorLayout;
+import com.mbse.layout.FunctionalBehaviorLayout;
 import com.mbse.model.MbseModel;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;

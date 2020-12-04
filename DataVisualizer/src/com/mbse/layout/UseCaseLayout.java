@@ -1,4 +1,4 @@
-package com.mbse.graphx.layout;
+package com.mbse.layout;
 
 public class UseCaseLayout {
 

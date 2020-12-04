@@ -12,11 +12,11 @@ import java.util.Set;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import com.mbse.graphx.layout.MbseLayout;
 import com.mbse.graphx.layout.behavior.stage.mxCoordinateAssignment;
 import com.mbse.graphx.layout.behavior.stage.mxHierarchicalLayoutStage;
 import com.mbse.graphx.layout.behavior.stage.mxMedianHybridCrossingReduction;
 import com.mbse.graphx.layout.behavior.stage.mxMinimumCycleRemover;
+import com.mbse.layout.MbseLayout;
 import com.mxgraph.canvas.mxICanvas;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.layout.hierarchical.model.mxGraphHierarchyModel;

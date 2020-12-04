@@ -1,4 +1,4 @@
-package com.mbse.graphx.layout;
+package com.mbse.layout;
 
 import java.util.ArrayList;
 import java.util.HashSet;

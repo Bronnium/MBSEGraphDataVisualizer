@@ -3,10 +3,10 @@ package com.mbse.model;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import com.mbse.graphx.layout.CallStackLayout;
-import com.mbse.graphx.layout.DefaultMbseLayout;
-import com.mbse.graphx.layout.FunctionalBreakdownStructureLayout;
-import com.mbse.graphx.layout.MbseLayout;
+import com.mbse.layout.CallStackLayout;
+import com.mbse.layout.DefaultMbseLayout;
+import com.mbse.layout.FunctionalBreakdownStructureLayout;
+import com.mbse.layout.MbseLayout;
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.layout.mxGraphLayout;
 import com.mxgraph.model.mxGraphModel;

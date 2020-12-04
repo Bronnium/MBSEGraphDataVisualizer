@@ -1,4 +1,4 @@
-package com.mbse.graphx.layout;
+package com.mbse.layout;
 
 import com.mxgraph.layout.mxCompactTreeLayout;
 import com.mxgraph.view.mxGraph;
