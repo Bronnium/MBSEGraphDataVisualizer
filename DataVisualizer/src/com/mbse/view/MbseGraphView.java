@@ -97,6 +97,7 @@ public class MbseGraphView extends JFrame {
 		popupmenu = new JPopupMenu("Edit");
         
 		displayAsLeaf = new JMenuItem("display as leafs");
+		displayAsLeaf.setIcon(new ImageIcon("icons/tree-structure.png"));
         copy = new JMenuItem("Copy");  
         paste = new JMenuItem("Paste");  
         popupmenu.add(displayAsLeaf);

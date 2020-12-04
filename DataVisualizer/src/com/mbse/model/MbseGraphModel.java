@@ -29,6 +29,8 @@ public class MbseGraphModel extends mxGraph {
 	public MbseGraphModel(LinkedList<D2Element> vertexList, LinkedList<D2Line> edgeList) {
 		super();
 		
+		setAutoOrigin(true);
+		
 		appliedLayout = new DefaultMbseLayout(this);
 		//appliedLayout = new CallStackLayout(this);
 		/*
