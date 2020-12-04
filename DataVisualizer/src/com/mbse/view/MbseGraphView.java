@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -177,42 +178,14 @@ public class MbseGraphView extends JFrame {
 	public void addMbseGraphComponent(MbseGraphModel model) {
 		graphComponent = new mxGraphComponent(model);
 		
-		// Installs the popup menu in the graph component
-		graphComponent.getGraphControl().addMouseListener(new MouseAdapter()
-		{
-
-			/**
-			 * 
-			 */
-			public void mousePressed(MouseEvent e)
-			{
-				// Handles context menu on the Mac where the trigger is on mousepressed
-				mouseReleased(e);
-			}
-
-			/**
-			 * 
-			 */
-			public void mouseReleased(MouseEvent e)
-			{
-				if (e.isPopupTrigger())
-				{
-					System.out.println("click");//showGraphPopupMenu(e);
-					 
-					popupmenu.show(graphComponent, e.getX(), e.getY());
-					//graphComponent.getGraph().getSelectionCell()
-					System.out.println("Selected cell:"+graphComponent.getGraph().getSelectionCell());
-				}
-				else
-					System.out.println("when ?");
-			}
-		});
-
+		
 		
 		contentPane.add(graphComponent);
 	}
 
-	public void addInputControl(ActionListener actionListener, ChangeListener changeListener) {
+	public void addInputControl(ActionListener actionListener, ChangeListener changeListener, MouseListener mouseListener) {
+		graphComponent.getGraphControl().addMouseListener(mouseListener);
+		
 		btnZoomIn.addActionListener(actionListener);
 		
 		layoutSelection.addActionListener(actionListener);
@@ -222,6 +195,12 @@ public class MbseGraphView extends JFrame {
 		
 		horizontalSpacingSlide.addChangeListener(changeListener);
 		verticalSpacingSlide.addChangeListener(changeListener);
+	}
+
+	public void displayPopupMenu(int x, int y) {
+		// TODO Auto-generated method stub
+		popupmenu.show(graphComponent, x, y);
+		
 	}
 	
 	
